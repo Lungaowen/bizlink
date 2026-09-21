@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Deliveries \u2014 BizLink dashboard</title>
+<title>Deliveries — BizLink dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
 <header class="top">
   <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
   <div class="top-links">
@@ -19,7 +18,6 @@
     <a href="../marketplace.html">Marketplace</a>
   </div>
 </header>
-
 <main>
   <div class="app-shell">
     <aside class="sidebar">
@@ -27,6 +25,8 @@
       <div class="biz-loc">Soshanguve South</div>
       <nav>
         <a href="orders.html">Orders</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="schedule.html">Schedule</a>
         <a href="deliveries.html" class="current">Deliveries</a>
         <a href="sales.html">Sales</a>
         <a href="payouts.html">Payouts</a>
@@ -35,58 +35,248 @@
     <div class="panel">
       <div class="panel-head">
         <div>
-          <h2>Deliveries</h2>
-          <div class="sub" id="del-sub">1 in progress</div>
+          <h2>Track delivery</h2>
+          <div class="sub" id="del-sub">Waiting for an active job…</div>
         </div>
+        <span class="status-pill waiting" id="del-pill">No active run</span>
       </div>
 
       <div class="banner driver" id="live-driver" style="display:none;"></div>
 
-      <h3 style="font-size:15px;" id="active-title">Airtime vouchers &middot; Central Distributors</h3>
+      <!-- ETA card from driver estimate -->
+      <div class="job-card" id="eta-card" style="display:none;margin-bottom:20px;background:var(--blue-tint);border-color:rgba(23,105,224,.2);">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.04em;">Driver ETA estimate</div>
+            <div style="font-size:28px;font-weight:600;margin-top:4px;" id="eta-value">—</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="eta-note">Set by your driver</div>
+          </div>
+          <div class="stat" style="padding:12px 16px;">
+            <div class="num" id="eta-mins" style="font-size:24px;">—</div>
+            <div class="label">minutes left</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:15px;" id="active-title">Live timeline</h3>
       <ul class="timeline" id="active-timeline">
-        <li class="done"><div class="dot"></div><div><div class="t-title">Order placed</div><div class="t-meta">Today, 07:12 \u2014 joined consolidation batch with 2 other shops</div></div></li>
-        <li class="done"><div class="dot"></div><div><div class="t-title">Batch closed \u2014 drivers notified</div><div class="t-meta">Today, 09:15 \u2014 push sent to 4 nearby drivers</div></div></li>
-        <li class="done"><div class="dot"></div><div><div class="t-title">Driver accepted</div><div class="t-meta">Today, 09:17 \u2014 Kabelo (Bakkie)</div></div></li>
-        <li class="done"><div class="dot"></div><div><div class="t-title">Collected from supplier</div><div class="t-meta">Today, 09:40 \u2014 Central Distributors, Soshanguve depot</div></div></li>
-        <li class="active"><div class="dot"></div><div><div class="t-title">Out for delivery</div><div class="t-meta">Driver Kabelo &middot; ETA 11:20 &middot; next to Boxer, near the big tree</div></div></li>
-        <li><div class="dot"></div><div><div class="t-title">Delivered</div><div class="t-meta">Pending</div></div></li>
+        <li id="tl-0"><div class="dot"></div><div><div class="t-title">Order / batch</div><div class="t-meta">No active delivery yet — close a batch on Orders</div></div></li>
+        <li id="tl-1"><div class="dot"></div><div><div class="t-title">Drivers notified</div><div class="t-meta">Pending</div></div></li>
+        <li id="tl-2"><div class="dot"></div><div><div class="t-title">Driver accepted</div><div class="t-meta">Pending</div></div></li>
+        <li id="tl-3"><div class="dot"></div><div><div class="t-title">Collecting from supplier</div><div class="t-meta">Pending</div></div></li>
+        <li id="tl-4"><div class="dot"></div><div><div class="t-title">Out for delivery</div><div class="t-meta">Pending</div></div></li>
+        <li id="tl-5"><div class="dot"></div><div><div class="t-title">Delivered to your shop</div><div class="t-meta">Pending</div></div></li>
       </ul>
+
+      <!-- Rate driver after delivery -->
+      <div class="job-card" id="rate-panel" style="display:none;margin-top:28px;">
+        <h3 style="font-size:16px;margin-bottom:8px;">Rate your driver</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">How was this delivery? Ratings help other shops choose reliable drivers.</p>
+        <div id="star-row" style="display:flex;gap:8px;margin-bottom:16px;">
+          <button type="button" class="star-btn" data-star="1" aria-label="1 star">★</button>
+          <button type="button" class="star-btn" data-star="2" aria-label="2 stars">★</button>
+          <button type="button" class="star-btn" data-star="3" aria-label="3 stars">★</button>
+          <button type="button" class="star-btn" data-star="4" aria-label="4 stars">★</button>
+          <button type="button" class="star-btn" data-star="5" aria-label="5 stars">★</button>
+        </div>
+        <div class="form-field">
+          <label for="rate-comment">Comment (optional)</label>
+          <input id="rate-comment" type="text" placeholder="e.g. On time, careful with stock">
+        </div>
+        <div class="cta-row">
+          <button class="btn-primary" type="button" id="submit-rating">Submit rating</button>
+        </div>
+        <p id="rate-msg" style="font-size:13px;min-height:18px;margin-top:12px;"></p>
+      </div>
+
+      <div class="banner success" id="rated-banner" style="display:none;margin-top:20px;"></div>
 
       <h3 style="font-size:15px;margin-top:32px;">Recent deliveries</h3>
       <table>
-        <thead><tr><th>Order</th><th>Driver</th><th>Delivered</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>Bread, white loaf</td><td>Kabelo</td><td>Yesterday, 08:15</td><td><span class="status-pill delivered">Delivered</span></td></tr>
-          <tr><td>Cooking oil, 750ml</td><td>Precious</td><td>2 days ago</td><td><span class="status-pill delivered">Delivered</span></td></tr>
-          <tr><td>Rice, 5kg</td><td>Kabelo</td><td>4 days ago</td><td><span class="status-pill overdue">Late (45 min)</span></td></tr>
+        <thead><tr><th>Order</th><th>Driver</th><th>Delivered</th><th>Rating</th><th>Status</th></tr></thead>
+        <tbody id="recent-rows">
+          <tr><td>Bread, white loaf</td><td>Kabelo</td><td>Yesterday</td><td>★★★★★</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          <tr><td>Cooking oil, 750ml</td><td>Precious</td><td>2 days ago</td><td>★★★★☆</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          <tr><td>Rice, 5kg</td><td>Kabelo</td><td>4 days ago</td><td>★★★☆☆</td><td><span class="status-pill overdue">Late (45 min)</span></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </main>
-
+<style>
+  .star-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--white); color: #c5cdd8; font-size: 22px; cursor: pointer;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .star-btn:hover, .star-btn.on {
+    color: var(--yellow); border-color: var(--yellow); background: var(--yellow-soft);
+  }
+</style>
 <script src="../assets/app.js"></script>
 <script>
-  (function(){
-    var raw = sessionStorage.getItem('bizlink_driver');
-    if(!raw) return;
-    var d = JSON.parse(raw);
-    var el = document.getElementById('live-driver');
-    var sub = document.getElementById('del-sub');
-    if(sub) sub.textContent = 'Driver ' + d.name + ' \u00b7 ' + d.vehicle + ' \u00b7 ETA ' + d.eta;
-    if(el){
-      el.style.display = 'flex';
-      el.innerHTML =
-        '<div class="driver-info">' +
-          '<div class="driver-avatar">' + d.name.charAt(0) + '</div>' +
-          '<div>' +
-            '<div class="driver-line"><b>' + d.name + ' is on this job</b></div>' +
-            '<div class="driver-meta">' + d.vehicle + ' \u00b7 ' + d.plate + ' \u00b7 ' + d.phone + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<span class="status-pill collecting">Collecting / en route</span>';
+  var selectedStars = 0;
+
+  function setTimeline(upTo) {
+    for (var i = 0; i <= 5; i++) {
+      var li = document.getElementById('tl-' + i);
+      if (!li) continue;
+      if (i < upTo) li.className = 'done';
+      else if (i === upTo) li.className = 'active';
+      else li.className = '';
     }
-  })();
+  }
+
+  function refreshTrack() {
+    var status = sessionStorage.getItem('bizlink_batch_status');
+    var rawDriver = sessionStorage.getItem('bizlink_driver');
+    var rawJob = sessionStorage.getItem('bizlink_driver_job');
+    var job = null;
+    try { job = rawJob ? JSON.parse(rawJob) : null; } catch (e) {}
+    var driver = null;
+    try { driver = rawDriver ? JSON.parse(rawDriver) : null; } catch (e) {}
+
+    var etaCard = document.getElementById('eta-card');
+    var live = document.getElementById('live-driver');
+    var sub = document.getElementById('del-sub');
+    var pill = document.getElementById('del-pill');
+    var ratePanel = document.getElementById('rate-panel');
+
+    if (status === 'notifying') {
+      setTimeline(1);
+      document.getElementById('tl-1').querySelector('.t-meta').textContent = 'Waiting for a driver to accept…';
+      sub.textContent = 'Notifying drivers';
+      pill.textContent = 'Notifying';
+      pill.className = 'status-pill waiting';
+      etaCard.style.display = 'none';
+      live.style.display = 'none';
+      ratePanel.style.display = 'none';
+      return;
+    }
+
+    if (!driver || status !== 'assigned') {
+      if (job && job.status === 'complete') {
+        showCompleted(job, driver);
+      }
+      return;
+    }
+
+    var eta = (job && job.etaEstimate) || driver.eta || '—';
+    var etaMins = (job && job.etaMinutes) || parseInt(String(eta).replace(/\D/g, ''), 10) || null;
+
+    live.style.display = 'flex';
+    live.innerHTML =
+      '<div class="driver-info">' +
+        '<div class="driver-avatar">' + driver.name.charAt(0) + '</div>' +
+        '<div>' +
+          '<div class="driver-line"><b>' + driver.name + ' is on this job</b></div>' +
+          '<div class="driver-meta">' + driver.vehicle + ' · ' + driver.plate + ' · ' + driver.phone + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<span class="status-pill collecting">En route</span>';
+
+    etaCard.style.display = 'block';
+    document.getElementById('eta-value').textContent = eta;
+    document.getElementById('eta-mins').textContent = etaMins != null ? etaMins : '—';
+    document.getElementById('eta-note').textContent =
+      (job && job.etaNote) ? job.etaNote : 'Estimated by ' + driver.name;
+
+    var phase = (job && job.phase) || 'accepted';
+    if (phase === 'complete' || (job && job.status === 'complete')) {
+      showCompleted(job, driver);
+      return;
+    }
+    if (phase === 'delivering') {
+      setTimeline(4);
+      document.getElementById('tl-2').querySelector('.t-meta').textContent = driver.name + ' · accepted';
+      document.getElementById('tl-3').querySelector('.t-meta').textContent = 'Stock collected';
+      document.getElementById('tl-4').querySelector('.t-meta').textContent =
+        'ETA ' + eta + ' · heading to your landmark';
+      sub.textContent = driver.name + ' · out for delivery · ETA ' + eta;
+      pill.textContent = 'Out for delivery';
+      pill.className = 'status-pill collecting';
+    } else if (phase === 'collecting') {
+      setTimeline(3);
+      document.getElementById('tl-2').querySelector('.t-meta').textContent = driver.name + ' · ' + driver.vehicle;
+      document.getElementById('tl-3').querySelector('.t-meta').textContent = 'At supplier · ETA to you ' + eta;
+      sub.textContent = driver.name + ' collecting · ETA ' + eta;
+      pill.textContent = 'Collecting';
+      pill.className = 'status-pill collecting';
+    } else {
+      setTimeline(2);
+      document.getElementById('tl-2').querySelector('.t-meta').textContent =
+        driver.name + ' · ' + driver.vehicle + ' · ETA ' + eta;
+      sub.textContent = 'Driver ' + driver.name + ' assigned · ETA ' + eta;
+      pill.textContent = 'Driver assigned';
+      pill.className = 'status-pill collecting';
+    }
+    ratePanel.style.display = 'none';
+  }
+
+  function showCompleted(job, driver) {
+    setTimeline(5);
+    document.getElementById('tl-5').querySelector('.t-meta').textContent = 'Delivered — thank you';
+    document.getElementById('del-sub').textContent = 'Delivery complete';
+    document.getElementById('del-pill').textContent = 'Delivered';
+    document.getElementById('del-pill').className = 'status-pill delivered';
+    document.getElementById('eta-card').style.display = 'none';
+
+    var name = (driver && driver.name) || (job && job.driverName) || 'Driver';
+    var rated = sessionStorage.getItem('bizlink_last_rating');
+    if (rated) {
+      document.getElementById('rate-panel').style.display = 'none';
+      var b = document.getElementById('rated-banner');
+      b.style.display = 'flex';
+      b.innerHTML = '<span><b>You rated ' + name + ' ' + rated + '/5.</b> Thanks for the feedback.</span>';
+    } else {
+      document.getElementById('rate-panel').style.display = 'block';
+      document.getElementById('rate-panel').dataset.driver = name;
+    }
+  }
+
+  document.querySelectorAll('.star-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      selectedStars = parseInt(btn.getAttribute('data-star'), 10);
+      document.querySelectorAll('.star-btn').forEach(function (b) {
+        b.classList.toggle('on', parseInt(b.getAttribute('data-star'), 10) <= selectedStars);
+      });
+    });
+  });
+
+  document.getElementById('submit-rating').addEventListener('click', function () {
+    var msg = document.getElementById('rate-msg');
+    if (selectedStars < 1) {
+      msg.style.color = 'var(--red)';
+      msg.textContent = 'Choose a star rating.';
+      return;
+    }
+    var name = document.getElementById('rate-panel').dataset.driver || 'Driver';
+    var comment = document.getElementById('rate-comment').value.trim();
+    sessionStorage.setItem('bizlink_last_rating', String(selectedStars));
+    sessionStorage.setItem('bizlink_last_rating_comment', comment);
+    // Keep a simple history row
+    var rows = document.getElementById('recent-rows');
+    var stars = '★★★★★'.slice(0, selectedStars) + '☆☆☆☆☆'.slice(selectedStars);
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>Bulk restock batch</td><td>' + name + '</td><td>Just now</td><td>' +
+      stars + '</td><td><span class="status-pill delivered">Rated</span></td>';
+    rows.prepend(tr);
+    document.getElementById('rate-panel').style.display = 'none';
+    var b = document.getElementById('rated-banner');
+    b.style.display = 'flex';
+    b.innerHTML = '<span><b>Rating saved.</b> ' + name + ' received ' + selectedStars +
+      '/5' + (comment ? ' — “' + comment + '”' : '') + '</span>';
+  });
+
+  // Demo: mark complete from query ?complete=1 or when driver finishes
+  if (new URLSearchParams(location.search).get('complete') === '1') {
+    var j = { status: 'complete', phase: 'complete', driverName: 'Kabelo' };
+    sessionStorage.setItem('bizlink_driver_job', JSON.stringify(j));
+    sessionStorage.setItem('bizlink_batch_status', 'assigned');
+  }
+
+  refreshTrack();
+  setInterval(refreshTrack, 2000);
 </script>
 </body>
 </html>
