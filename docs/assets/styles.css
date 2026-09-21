@@ -648,3 +648,56 @@ button, a, input, select, textarea {
     padding-right: 12px;
   }
 }
+
+
+/* =========================================================
+   BizLink dashboard navigation
+   One navigation system: sidebar on desktop,
+   horizontal sidebar navigation on smaller screens.
+   The dashboard header remains a brand/account bar only.
+   ========================================================= */
+body:has(.app-shell) > header.top .top-links {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  body:has(.app-shell) .app-shell {
+    display: block;
+    margin-top: 16px;
+  }
+
+  body:has(.app-shell) .sidebar {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 12px 14px;
+    overflow: hidden;
+    gap: 8px;
+  }
+
+  body:has(.app-shell) .sidebar .biz-name,
+  body:has(.app-shell) .sidebar .biz-loc {
+    display: none;
+  }
+
+  body:has(.app-shell) .sidebar nav {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+    padding: 0;
+  }
+
+  body:has(.app-shell) .sidebar nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  body:has(.app-shell) .sidebar nav a {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+}
