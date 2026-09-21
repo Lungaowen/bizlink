@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BizLink — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F0;
+    --ink:#1B2436;
+    --ink-soft:#3C4457;
+    --muted:#6B6A61;
+    --line:#DEDCD2;
+    --amber:#E2963C;
+    --amber-ink:#5A3A10;
+    --teal:#1E7A5F;
+    --teal-tint:#E4F0EC;
+    --navy-tint:#E7E9F0;
+    --amber-tint:#FBEEDC;
+    --radius:6px;
+    --serif:'Fraunces', Georgia, serif;
+    --sans:'Inter', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+  a{color:inherit;}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0 0 .4em;color:var(--ink);}
+  p{margin:0 0 1em;color:var(--ink-soft);}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+  header.top{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--line);}
+  .wordmark{font-family:var(--serif);font-weight:600;font-size:20px;letter-spacing:-0.01em;}
+  .wordmark em{font-style:italic;color:var(--amber);}
+  nav[role="tablist"]{display:flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;}
+  nav[role="tablist"] button{
+    font-family:var(--sans);font-size:14px;font-weight:500;color:var(--muted);
+    background:none;border:none;padding:8px 18px;border-radius:999px;cursor:pointer;
+  }
+  nav[role="tablist"] button[aria-selected="true"]{background:var(--ink);color:#fff;}
+  nav[role="tablist"] button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+  main{max-width:1080px;margin:0 auto;padding:0 32px 80px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .hero{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;padding:72px 0 56px;}
+  .hero h1{font-size:44px;line-height:1.12;max-width:11ch;}
+  .hero .lede{font-size:17px;max-width:38ch;}
+  .cta-row{display:flex;gap:12px;margin-top:28px;align-items:center;}
+  .btn-primary{background:var(--ink);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:15px;padding:13px 24px;border-radius:var(--radius);cursor:pointer;}
+  .btn-primary:hover{background:#2a3550;}
+  .btn-ghost{background:none;border:1px solid var(--line);font-family:var(--sans);font-weight:500;font-size:15px;padding:12px 20px;border-radius:var(--radius);cursor:pointer;color:var(--ink);}
+
+  .route-art{position:relative;height:260px;}
+  .route-art svg{width:100%;height:100%;}
+  .route-path{fill:none;stroke:var(--line);stroke-width:2;}
+  .route-path.draw{stroke:var(--amber);stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.8s ease-out forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @media (prefers-reduced-motion: reduce){.route-path.draw{animation:none;stroke-dashoffset:0;}}
+  .route-node{fill:var(--ink);}
+  .route-node.warehouse{fill:var(--teal);}
+  .route-node.shop{fill:var(--amber);}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:48px 0;border-top:1px solid var(--line);}
+  .split h2{font-size:22px;}
+  .split ul{list-style:none;margin:0;padding:0;}
+  .split li{padding:12px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink-soft);}
+  .split li:first-child{border-top:none;}
+  .split li b{color:var(--ink);font-weight:600;}
+
+  .app-shell{display:grid;grid-template-columns:200px 1fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:32px;background:#fff;}
+  .sidebar{background:var(--paper);border-right:1px solid var(--line);padding:24px 16px;}
+  .sidebar .biz-name{font-family:var(--serif);font-size:16px;font-weight:600;margin-bottom:2px;}
+  .sidebar .biz-loc{font-size:12px;color:var(--muted);margin-bottom:24px;}
+  .sidebar nav a{display:block;font-size:14px;padding:9px 10px;border-radius:var(--radius);color:var(--ink-soft);text-decoration:none;margin-bottom:2px;}
+  .sidebar nav a.current{background:var(--navy-tint);color:var(--ink);font-weight:500;}
+  .panel{padding:28px 32px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+  .panel-head h2{font-size:20px;margin-bottom:2px;}
+  .panel-head .sub{font-size:13px;color:var(--muted);}
+
+  .banner{display:flex;justify-content:space-between;align-items:center;background:var(--amber-tint);border:1px solid #EFCE9A;border-radius:var(--radius);padding:14px 18px;margin-bottom:22px;font-size:14px;}
+  .banner b{color:var(--amber-ink);}
+  .banner .countdown{font-family:var(--sans);font-weight:600;color:var(--amber-ink);}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{text-align:left;font-weight:500;color:var(--muted);font-size:12px;text-transform:none;padding:8px 10px;border-bottom:1px solid var(--line);}
+  td{padding:12px 10px;border-bottom:1px solid var(--line);color:var(--ink-soft);}
+  tr:last-child td{border-bottom:none;}
+  .status-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;}
+  .status-pill.waiting{background:var(--amber-tint);color:var(--amber-ink);}
+  .status-pill.collecting{background:var(--navy-tint);color:var(--ink);}
+  .status-pill.delivered{background:var(--teal-tint);color:var(--teal);}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px;}
+  .stat{border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;}
+  .stat .num{font-family:var(--serif);font-size:26px;font-weight:600;}
+  .stat .label{font-size:13px;color:var(--muted);}
+
+  .market-head{display:flex;justify-content:space-between;align-items:flex-end;margin:32px 0 20px;}
+  .market-head input{font-family:var(--sans);font-size:14px;border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;width:260px;}
+  .cart-chip{font-size:14px;font-weight:500;background:var(--ink);color:#fff;padding:8px 16px;border-radius:999px;}
+
+  .grid{columns:3 260px;column-gap:20px;}
+  .card{break-inside:avoid;margin-bottom:20px;border:1px solid var(--line);border-top:3px solid var(--amber);border-radius:4px;padding:18px;background:#fff;}
+  .card.cat-teal{border-top-color:var(--teal);}
+  .card.cat-navy{border-top-color:#3C4457;}
+  .card .biz{font-family:var(--serif);font-weight:600;font-size:16px;margin-bottom:2px;}
+  .card .tag{font-size:12px;color:var(--muted);margin-bottom:10px;display:block;}
+  .card .desc{font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+  .card .row{display:flex;justify-content:space-between;align-items:center;}
+  .card .price{font-weight:600;font-size:14px;}
+  .qty{display:flex;align-items:center;gap:8px;}
+  .qty button{width:26px;height:26px;border:1px solid var(--line);background:#fff;border-radius:50%;font-size:14px;cursor:pointer;line-height:1;}
+  .qty span{font-size:14px;min-width:14px;text-align:center;}
+
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr;padding-top:40px;}
+    .split{grid-template-columns:1fr;}
+    .app-shell{grid-template-columns:1fr;}
+    .sidebar{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;}
+    .sidebar nav{display:flex;gap:6px;}
+    .stat-row{grid-template-columns:1fr;}
+    .grid{columns:1 100%;}
+    header.top{flex-direction:column;gap:14px;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wordmark">Biz<em>Link</em></div>
+  <nav role="tablist" aria-label="Prototype views">
+    <button role="tab" id="tab-landing" aria-selected="true" aria-controls="view-landing" onclick="showView('landing')">Landing</button>
+    <button role="tab" id="tab-dashboard" aria-selected="false" aria-controls="view-dashboard" onclick="showView('dashboard')">Business dashboard</button>
+    <button role="tab" id="tab-market" aria-selected="false" aria-controls="view-market" onclick="showView('market')">Marketplace</button>
+  </nav>
+</header>
+
+<main>
+
+  <section id="view-landing" class="view active" role="tabpanel" aria-labelledby="tab-landing">
+    <h2 class="visually-hidden">BizLink landing page</h2>
+    <div class="hero">
+      <div>
+        <h1>Stock moves together, costs come down.</h1>
+        <p class="lede">BizLink bundles your restock with other shops on your street, then one driver collects and delivers it all — for a fraction of a solo courier run.</p>
+        <div class="cta-row">
+          <button class="btn-primary" onclick="showView('dashboard')">Order stock</button>
+          <button class="btn-ghost" onclick="showView('market')">Browse marketplace</button>
+        </div>
+      </div>
+      <div class="route-art" aria-hidden="true">
+        <svg viewBox="0 0 340 260">
+          <path class="route-path draw" d="M40 200 C 90 120, 130 200, 170 130 S 260 60, 300 60"/>
+          <circle class="route-node warehouse" cx="40" cy="200" r="7"/>
+          <circle class="route-node shop" cx="170" cy="130" r="6"/>
+          <circle class="route-node shop" cx="300" cy="60" r="6"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="split">
+      <div>
+        <h2>The problem</h2>
+        <ul>
+          <li><b>High delivery costs.</b> Courier and ride-hailing fares eat into thin margins.</li>
+          <li><b>Unreliable timing.</b> Restocks arrive late, or not at all.</li>
+          <li><b>No online reach.</b> Customers outside walking distance never find the shop.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>What BizLink does</h2>
+        <ul>
+          <li><b>Bulk collection.</b> One driver, one trip, several shops' stock.</li>
+          <li><b>Scheduled restocks.</b> Fixed daily or weekly slots — no more running out.</li>
+          <li><b>Geotagged addressing.</b> "Next to Boxer, near the big tree" is a valid address.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-dashboard" class="view" role="tabpanel" aria-labelledby="tab-dashboard">
+    <h2 class="visually-hidden">Township business dashboard</h2>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="biz-name">Thandi's Spaza</div>
+        <div class="biz-loc">Soshanguve South</div>
+        <nav>
+          <a href="#" class="current">Orders</a>
+          <a href="#">Deliveries</a>
+          <a href="#">Sales</a>
+          <a href="#">Payouts</a>
+        </nav>
+      </aside>
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Orders</h2>
+            <div class="sub">3 pending &middot; next collection today</div>
+          </div>
+          <button class="btn-primary" style="padding:10px 18px;font-size:14px;">New order</button>
+        </div>
+
+        <div class="banner">
+          <span><b>Consolidation window open</b> — 2 nearby shops have joined this restock batch.</span>
+          <span class="countdown" id="countdown">closes in 42:00</span>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="num">R 340</div><div class="label">Saved this month vs. solo courier</div></div>
+          <div class="stat"><div class="num">6</div><div class="label">Restocks this month</div></div>
+          <div class="stat"><div class="num">98%</div><div class="label">On-time delivery rate</div></div>
+        </div>
+
+        <table>
+          <thead><tr><th>Order</th><th>Supplier</th><th>Qty</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Maize meal, 10kg</td><td>Boitumelo Wholesalers</td><td>12</td><td><span class="status-pill waiting">Batching</span></td></tr>
+            <tr><td>Cooking oil, 750ml</td><td>Boitumelo Wholesalers</td><td>24</td><td><span class="status-pill waiting">Batching</span></td></tr>
+            <tr><td>Airtime vouchers</td><td>Central Distributors</td><td>50</td><td><span class="status-pill collecting">Driver en route</span></td></tr>
+            <tr><td>Bread, white loaf</td><td>Sunrise Bakery</td><td>30</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-market" class="view" role="tabpanel" aria-labelledby="tab-market">
+    <h2 class="visually-hidden">Consumer marketplace</h2>
+    <div class="market-head">
+      <div>
+        <h2 style="margin-bottom:2px;">Shops near you</h2>
+        <div class="sub" style="font-size:13px;color:var(--muted);">Soshanguve South &middot; delivery within 2&nbsp;km</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input type="text" placeholder="Search shops or products" aria-label="Search shops or products">
+        <span class="cart-chip">Cart: R <span id="cart-total">0</span></span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <span class="biz">Thandi's Spaza</span>
+        <span class="tag">Groceries &middot; 0.4 km</span>
+        <p class="desc">Maize meal, cooking oil, bread and daily essentials, restocked twice a week.</p>
+        <div class="row">
+          <span class="price">R 25 — bread loaf</span>
+          <div class="qty"><button onclick="addToCart(this,25)">&minus;</button><span>0</span><button onclick="addToCart(this,25)">+</button></div>
+        </div>
+      </div>
+
+      <div class="card cat-teal">
+        <span class="biz">Sipho's Barber</span>
+        <span class="tag">Services &middot; 0.7 km</span>
+        <p class="desc">Walk-ins and bookings. Fade, line-up, and beard trim.</p>
+        <div class="row">
+          <span class="price">R 80 — fade cut</span>
+          <div class="qty"><button onclick="addToCart(this,80)">&minus;</button><span>0</span><button onclick="addToCart(this,80)">+</button></div>
+        </div>
+      </div>
+
+      <div class="card cat-navy">
+        <span class="biz">Nomvula's Fashions</span>
+        <span class="tag">Retail &middot; 1.1 km</span>
+        <p class="desc">Second-hand and new clothing, alterations while you wait.</p>
+        <div class="row">
+          <span class="price">R 120 — school shirt</span>
+          <div class="qty"><button onclick="addToCart(this,120)">&minus;</button><span>0</span><button onclick="addToCart(this,120)">+</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="biz">Mzansi Kota Corner</span>
+        <span class="tag">Food &middot; 0.5 km</span>
+        <p class="desc">Kotas, vetkoek, and cold drinks. Busiest at lunch.</p>
+        <div class="row">
+          <span class="price">R 35 — full kota</span>
+          <div class="qty"><button onclick="addToCart(this,35)">&minus;</button><span>0</span><button onclick="addToCart(this,35)">+</button></div>
+        </div>
+      </div>
+
+      <div class="card cat-teal">
+        <span class="biz">Lindiwe's Salon</span>
+        <span class="tag">Services &middot; 1.3 km</span>
+        <p class="desc">Braids, relaxers, and wash-and-set. Book a slot ahead.</p>
+        <div class="row">
+          <span class="price">R 150 — braids (short)</span>
+          <div class="qty"><button onclick="addToCart(this,150)">&minus;</button><span>0</span><button onclick="addToCart(this,150)">+</button></div>
+        </div>
+      </div>
+
+      <div class="card cat-navy">
+        <span class="biz">Boxer Corner Hardware</span>
+        <span class="tag">Retail &middot; 0.9 km</span>
+        <p class="desc">Paint, tools, and building supplies for small jobs.</p>
+        <div class="row">
+          <span class="price">R 60 — paint brush set</span>
+          <div class="qty"><button onclick="addToCart(this,60)">&minus;</button><span>0</span><button onclick="addToCart(this,60)">+</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('[role="tab"]').forEach(t=>t.setAttribute('aria-selected','false'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('tab-'+name).setAttribute('aria-selected','true');
+}
+
+var cartTotal = 0;
+function addToCart(btn, price){
+  var span = btn.parentElement.querySelector('span');
+  var isMinus = btn.textContent.indexOf('\u2212') !== -1;
+  var qty = parseInt(span.textContent, 10);
+  if(isMinus){
+    if(qty === 0) return;
+    qty -= 1; cartTotal -= price;
+  } else {
+    qty += 1; cartTotal += price;
+  }
+  span.textContent = qty;
+  document.getElementById('cart-total').textContent = cartTotal;
+}
+
+var secs = 42*60;
+setInterval(function(){
+  if(secs <= 0) return;
+  secs -= 1;
+  var m = Math.floor(secs/60), s = secs%60;
+  document.getElementById('countdown').textContent = 'closes in ' + (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
+}, 1000);
+</script>
+
+</body>
+</html>
