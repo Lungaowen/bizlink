@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Active job \u2014 BizLink Driver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="index.html" class="current">Driver</a>
+    <a href="../customer/index.html">Customer</a>
+    <a href="../dashboard/orders.html">Business</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Kabelo</div>
+      <div class="biz-loc">Bakkie \u00b7 GP 482-KLM</div>
+      <nav>
+        <a href="index.html">Jobs</a>
+        <a href="active.html" class="current">Active job</a>
+        <a href="earnings.html">Earnings</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Active job</h2>
+          <div class="sub">Fee R 95 \u00b7 3 shops \u00b7 bulk restock</div>
+        </div>
+        <span class="status-pill collecting" id="job-status-pill">Collecting</span>
+      </div>
+
+      <ul class="timeline" id="job-steps">
+        <li class="done" data-step="0"><div class="dot"></div><div><div class="t-title">Job accepted</div><div class="t-meta">You took this batch</div></div></li>
+        <li class="active" data-step="1"><div class="dot"></div><div><div class="t-title">Collect \u2014 Boitumelo Wholesalers</div><div class="t-meta">Maize meal \u00d7 12, cooking oil \u00d7 24</div></div></li>
+        <li data-step="2"><div class="dot"></div><div><div class="t-title">Collect \u2014 Central Distributors</div><div class="t-meta">Airtime vouchers \u00d7 50</div></div></li>
+        <li data-step="3"><div class="dot"></div><div><div class="t-title">Deliver \u2014 Thandi's Spaza</div><div class="t-meta">Next to Boxer, near the big tree</div></div></li>
+        <li data-step="4"><div class="dot"></div><div><div class="t-title">Deliver \u2014 Sipho's Corner</div><div class="t-meta">Block H, yellow gate</div></div></li>
+        <li data-step="5"><div class="dot"></div><div><div class="t-title">Deliver \u2014 Mama Ntombi</div><div class="t-meta">Near the big tree + pin</div></div></li>
+        <li data-step="6"><div class="dot"></div><div><div class="t-title">Job complete</div><div class="t-meta">Fee released after last drop</div></div></li>
+      </ul>
+
+      <div class="cta-row" style="margin-top:24px;">
+        <button class="btn-primary" type="button" id="next-step-btn" onclick="advanceStep()">Mark collected</button>
+        <a class="btn-ghost" href="tel:0824412290">Call business</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  var step = 1;
+  var labels = [
+    '',
+    'Mark collected',
+    'Mark collected',
+    'Mark delivered',
+    'Mark delivered',
+    'Mark delivered',
+    'Done'
+  ];
+  function advanceStep(){
+    if(step >= 6) return;
+    var items = document.querySelectorAll('#job-steps li');
+    items[step].className = 'done';
+    step += 1;
+    if(step < items.length){
+      items[step].className = 'active';
+    }
+    var btn = document.getElementById('next-step-btn');
+    var pill = document.getElementById('job-status-pill');
+    if(step <= 2){
+      btn.textContent = 'Mark collected';
+      pill.textContent = 'Collecting';
+    } else if(step <= 5){
+      btn.textContent = 'Mark delivered';
+      pill.textContent = 'Out for delivery';
+      pill.className = 'status-pill collecting';
+    } else {
+      btn.textContent = 'Job complete';
+      btn.disabled = true;
+      pill.textContent = 'Complete';
+      pill.className = 'status-pill delivered';
+      sessionStorage.setItem('bizlink_driver_job', JSON.stringify({status:'complete', fee:95}));
+    }
+  }
+</script>
+</body>
+</html>
