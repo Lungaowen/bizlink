@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Track order \u2014 BizLink</title>
+<title>Track order — BizLink</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,9 +15,9 @@
   <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
   <div class="top-links">
     <a href="../index.html">Landing</a>
-    <a href="../driver/index.html">Driver</a>
-    <a href="index.html" class="current">Customer</a>
-    <a href="../dashboard/orders.html">Business</a>
+    <a href="index.html">Shop</a>
+    <a href="orders.html">My orders</a>
+    <a href="track.html" class="current">Track</a>
   </div>
 </header>
 
@@ -27,23 +27,51 @@
       <div class="panel-head">
         <div>
           <h2>Track delivery</h2>
-          <div class="sub" id="track-sub">Finding a driver\u2026</div>
+          <div class="sub" id="track-sub">Finding a driver…</div>
         </div>
         <span class="status-pill waiting" id="track-pill">Finding driver</span>
+      </div>
+
+      <!-- Shared route queue -->
+      <div class="job-card" id="shared-queue" style="margin-bottom:20px;background:var(--blue-tint);border-color:rgba(23,105,224,.2);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.04em;">Shared delivery</div>
+            <div style="font-size:22px;font-weight:600;margin-top:4px;" id="queue-headline">—</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="queue-detail">Your order is on a consolidated route with nearby customers.</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="stat" style="padding:12px 16px;min-width:100px;">
+              <div class="num" id="packages-before" style="font-size:28px;">—</div>
+              <div class="label">packages before you</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;">
+            <span>Route progress</span>
+            <span id="route-progress-label">0 / 4 stops</span>
+          </div>
+          <div style="height:8px;background:var(--white);border-radius:99px;overflow:hidden;border:1px solid var(--line);">
+            <div id="route-bar" style="height:100%;width:0%;background:var(--blue);border-radius:99px;transition:width .6s ease;"></div>
+          </div>
+        </div>
+        <ol id="stop-list" style="margin:16px 0 0;padding:0;list-style:none;font-size:13px;"></ol>
       </div>
 
       <div class="banner driver" id="cust-driver" style="display:none;"></div>
 
       <ul class="timeline" id="cust-timeline">
         <li class="done"><div class="dot"></div><div><div class="t-title">Order placed</div><div class="t-meta" id="t-placed">Just now</div></div></li>
-        <li class="active" id="step-find"><div class="dot"></div><div><div class="t-title">Finding nearby driver</div><div class="t-meta">Notifying drivers in your area</div></div></li>
+        <li class="active" id="step-find"><div class="dot"></div><div><div class="t-title">Finding nearby driver</div><div class="t-meta">Matching to a shared route in your area</div></div></li>
         <li id="step-assign"><div class="dot"></div><div><div class="t-title">Driver assigned</div><div class="t-meta">Pending</div></div></li>
         <li id="step-pickup"><div class="dot"></div><div><div class="t-title">Picked up from shop</div><div class="t-meta">Pending</div></div></li>
         <li id="step-del"><div class="dot"></div><div><div class="t-title">Out for delivery</div><div class="t-meta">Pending</div></div></li>
-        <li id="step-done"><div class="dot"></div><div><div class="t-title">Delivered</div><div class="t-meta">Pending</div></div></li>
+        <li id="step-done"><div class="dot"></div><div><div class="t-title">Delivered to you</div><div class="t-meta">Pending</div></div></li>
       </ul>
 
       <div class="cta-row" style="margin-top:20px;">
+        <a class="btn-ghost" href="orders.html">My orders</a>
         <a class="btn-ghost" href="index.html">Order again</a>
       </div>
     </div>
@@ -51,42 +79,142 @@
 </main>
 
 <script>
+  /* Shared route simulation: stops before the customer */
+  var stops = [
+    { id: 1, label: 'Pickup — Thandi\'s Spaza', type: 'pickup', packages: 0 },
+    { id: 2, label: 'Drop — Block C (Nomsa)', type: 'drop', packages: 1, other: true },
+    { id: 3, label: 'Drop — Zone 4 (Sipho)', type: 'drop', packages: 1, other: true },
+    { id: 4, label: 'Drop — You', type: 'drop', packages: 1, you: true }
+  ];
+  // Packages before the customer = other drops that come first
+  var packagesBeforeYou = stops.filter(function (s) { return s.other; }).length; // 2
+  var totalDrops = stops.filter(function (s) { return s.type === 'drop'; }).length; // 3
+  var currentStopIndex = 0; // 0 = not started on route yet
+
   var order = null;
-  try { order = JSON.parse(sessionStorage.getItem('bizlink_customer_order') || 'null'); } catch(e){}
-  if(order){
-    document.getElementById('t-placed').textContent = 'Order total R ' + order.total + ' \u00b7 ' + (order.addr || '');
+  try { order = JSON.parse(sessionStorage.getItem('bizlink_customer_order') || 'null'); } catch (e) {}
+  if (order) {
+    document.getElementById('t-placed').textContent =
+      'Order total R ' + order.total + ' · ' + (order.addr || '') +
+      (order.scheduleSlot ? ' · ' + order.scheduleSlot : '');
   }
 
-  // Simulate: find driver \u2192 assign \u2192 pickup \u2192 deliver
-  setTimeout(function(){
+  function packagesStillBefore() {
+    // Count other-customer drops that are still ahead of "you" and not yet completed
+    var count = 0;
+    for (var i = 0; i < stops.length; i++) {
+      if (stops[i].you) break;
+      if (stops[i].other && i >= currentStopIndex) count += stops[i].packages || 1;
+    }
+    return count;
+  }
+
+  function renderQueue() {
+    var before = packagesStillBefore();
+    var el = document.getElementById('packages-before');
+    el.textContent = before;
+    var headline = document.getElementById('queue-headline');
+    var detail = document.getElementById('queue-detail');
+
+    if (before === 0 && currentStopIndex > 0) {
+      headline.textContent = 'You\'re next';
+      detail.textContent = 'No packages ahead — driver is heading to you now.';
+    } else if (before === 0 && currentStopIndex === 0) {
+      headline.textContent = packagesBeforeYou + ' packages on this route before you';
+      detail.textContent = 'Shared with ' + packagesBeforeYou + ' other customer' +
+        (packagesBeforeYou === 1 ? '' : 's') + ' · ' + totalDrops + ' drops total.';
+    } else {
+      headline.textContent = before + ' package' + (before === 1 ? '' : 's') + ' before you';
+      detail.textContent = 'Shared route · ' + totalDrops + ' customer drops · your stop is last on this leg.';
+    }
+
+    var doneStops = Math.min(currentStopIndex, stops.length);
+    document.getElementById('route-progress-label').textContent =
+      doneStops + ' / ' + stops.length + ' stops';
+    document.getElementById('route-bar').style.width =
+      Math.round((doneStops / stops.length) * 100) + '%';
+
+    var list = document.getElementById('stop-list');
+    list.innerHTML = stops.map(function (s, i) {
+      var state = i < currentStopIndex ? 'done' : (i === currentStopIndex ? 'active' : 'pending');
+      var badge = s.you
+        ? '<span class="status-pill waiting" style="margin-left:8px;">You</span>'
+        : (s.other ? '<span style="margin-left:8px;font-size:11px;color:var(--muted);">+1 package</span>' : '');
+      var color = state === 'done' ? 'var(--success)' : (state === 'active' ? 'var(--blue)' : 'var(--muted)');
+      var weight = state === 'active' || s.you ? '600' : '400';
+      return '<li style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);color:' + color + ';font-weight:' + weight + ';">' +
+        '<span style="width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:10px;flex-shrink:0;">' +
+        (state === 'done' ? '✓' : (i + 1)) + '</span>' +
+        s.label + badge +
+      '</li>';
+    }).join('');
+  }
+
+  renderQueue();
+
+  // Simulate: find driver → assign → progress shared stops → deliver to you
+  setTimeout(function () {
     document.getElementById('step-find').className = 'done';
     document.getElementById('step-assign').className = 'active';
-    document.getElementById('step-assign').querySelector('.t-meta').textContent = 'Precious \u00b7 Toyota Quantum \u00b7 ETA 18 min';
-    document.getElementById('track-sub').textContent = 'Precious is on the way to the shop';
+    document.getElementById('step-assign').querySelector('.t-meta').textContent =
+      'Precious · Toyota Quantum · shared route · ETA ~25 min';
+    document.getElementById('track-sub').textContent =
+      packagesBeforeYou + ' packages before you on this shared run';
     document.getElementById('track-pill').textContent = 'Driver assigned';
     document.getElementById('track-pill').className = 'status-pill collecting';
     var card = document.getElementById('cust-driver');
     card.style.display = 'flex';
-    card.innerHTML = '<div class="driver-info"><div class="driver-avatar">P</div><div><div class="driver-line"><b>Precious</b></div><div class="driver-meta">Toyota Quantum \u00b7 GP 119-TZX \u00b7 073 882 1044</div></div></div>';
-  }, 2500);
+    card.innerHTML =
+      '<div class="driver-info"><div class="driver-avatar">P</div><div>' +
+      '<div class="driver-line"><b>Precious</b> · shared delivery</div>' +
+      '<div class="driver-meta">Toyota Quantum · GP 119-TZX · 073 882 1044</div></div></div>';
+  }, 2200);
 
-  setTimeout(function(){
+  // Pickup done → start route (stop 0 complete)
+  setTimeout(function () {
     document.getElementById('step-assign').className = 'done';
     document.getElementById('step-pickup').className = 'active';
-    document.getElementById('step-pickup').querySelector('.t-meta').textContent = 'Collected from Thandi\'s Spaza';
-    document.getElementById('track-sub').textContent = 'On the way to you';
+    document.getElementById('step-pickup').querySelector('.t-meta').textContent =
+      'Collected · ' + totalDrops + ' customer packages on board';
+    document.getElementById('track-sub').textContent =
+      packagesBeforeYou + ' packages before you';
     document.getElementById('track-pill').textContent = 'Out for delivery';
-  }, 5000);
+    currentStopIndex = 1;
+    renderQueue();
+  }, 4500);
 
-  setTimeout(function(){
+  // First other drop done → 1 package before you
+  setTimeout(function () {
     document.getElementById('step-pickup').className = 'done';
+    document.getElementById('step-del').className = 'active';
+    document.getElementById('step-del').querySelector('.t-meta').textContent =
+      '1 package delivered · still 1 before you';
+    currentStopIndex = 2;
+    renderQueue();
+    document.getElementById('track-sub').textContent = '1 package before you';
+  }, 7000);
+
+  // Second other drop → you're next
+  setTimeout(function () {
+    document.getElementById('step-del').querySelector('.t-meta').textContent =
+      'You\'re next — driver is on the way to your landmark';
+    currentStopIndex = 3;
+    renderQueue();
+    document.getElementById('track-sub').textContent = 'You\'re next — 0 packages before you';
+  }, 9500);
+
+  // Delivered to you
+  setTimeout(function () {
     document.getElementById('step-del').className = 'done';
     document.getElementById('step-done').className = 'active';
-    document.getElementById('step-done').querySelector('.t-meta').textContent = 'Enjoy \u2014 rate your driver in the full app';
+    document.getElementById('step-done').querySelector('.t-meta').textContent =
+      'Enjoy — shared route completed';
     document.getElementById('track-sub').textContent = 'Delivered';
     document.getElementById('track-pill').textContent = 'Delivered';
     document.getElementById('track-pill').className = 'status-pill delivered';
-  }, 8000);
+    currentStopIndex = 4;
+    renderQueue();
+  }, 12000);
 </script>
 </body>
 </html>
