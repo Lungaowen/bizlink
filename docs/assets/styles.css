@@ -334,3 +334,317 @@ tr:last-child td{border-bottom:none;}
   .top-links a{font-size:14px;padding:8px 16px;}
   .mobile-nav{display:none;}
 }
+/* =========================================================
+   BizLink mobile responsiveness
+   ========================================================= */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+img, svg, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+button, a, input, select, textarea {
+  max-width: 100%;
+}
+
+.table-wrap,
+.table-responsive,
+.data-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 900px) {
+  .top {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+
+  .top-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+
+  .top-links a {
+    display: inline-block;
+    margin-right: 14px;
+  }
+
+  .auth-actions {
+    margin-left: auto;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .route-art {
+    display: none;
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard,
+  .dashboard-layout,
+  .app-layout,
+  .content-layout,
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  .side-nav,
+  .dashboard-sidebar {
+    display: none;
+  }
+
+  .main,
+  .main-content,
+  .dashboard-main,
+  .content,
+  .page-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cards,
+  .stats-grid,
+  .metric-grid,
+  .card-grid,
+  .product-grid,
+  .orders-grid,
+  .delivery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid,
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .page-header > * {
+    min-width: 0;
+  }
+
+  .actions,
+  .button-row,
+  .cta-row {
+    flex-wrap: wrap;
+  }
+
+  .actions > *,
+  .button-row > * {
+    max-width: 100%;
+  }
+
+  .table,
+  table {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-pad: 16px;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  .top {
+    padding: 12px 14px;
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+  }
+
+  .auth-actions {
+    gap: 8px;
+  }
+
+  .auth-link,
+  .auth-cta {
+    padding: 8px 10px;
+  }
+
+  main,
+  .page,
+  .container,
+  .dashboard-container,
+  .content-container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+    box-sizing: border-box;
+  }
+
+  .hero {
+    padding: 28px 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.05;
+  }
+
+  .lede {
+    font-size: 1rem;
+  }
+
+  .cta-row,
+  .actions,
+  .button-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta-row > a,
+  .actions > button,
+  .actions > a,
+  .button-row > button,
+  .button-row > a,
+  .btn,
+  .btn-primary,
+  .btn-ghost {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .cards,
+  .stats-grid,
+  .metric-grid,
+  .card-grid,
+  .product-grid,
+  .orders-grid,
+  .delivery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card,
+  .panel,
+  .section-card,
+  .stat-card {
+    min-width: 0;
+  }
+
+  .split {
+    gap: 20px;
+  }
+
+  .split > * {
+    min-width: 0;
+  }
+
+  .page-header h1,
+  .page-title {
+    font-size: 1.55rem;
+  }
+
+  .table-wrap,
+  .table-responsive,
+  .data-table-wrap {
+    margin-left: -2px;
+    margin-right: -2px;
+    width: calc(100% + 4px);
+  }
+
+  table {
+    min-width: 560px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+  }
+
+  button {
+    min-height: 44px;
+  }
+
+  .modal,
+  .dialog,
+  .drawer {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+  }
+
+  .mobile-nav {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    width: 100%;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .stack-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .top {
+    gap: 8px;
+  }
+
+  .top-links {
+    font-size: 0.9rem;
+  }
+
+  .auth-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .auth-actions > * {
+    flex: 1;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 1.9rem;
+  }
+
+  main,
+  .page,
+  .container,
+  .dashboard-container,
+  .content-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
