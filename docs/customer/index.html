@@ -3,29 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Customer \u2014 BizLink</title>
+<title>Customer — BizLink</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
 <header class="top">
   <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
   <div class="top-links">
     <a href="../index.html">Landing</a>
-    <a href="../driver/index.html">Driver</a>
-    <a href="index.html" class="current">Customer</a>
-    <a href="../dashboard/orders.html">Business</a>
+    <a href="index.html" class="current">Shop</a>
+    <a href="orders.html">My orders</a>
+    <a href="track.html">Track</a>
   </div>
 </header>
-
 <main>
   <div class="market-head">
     <div>
       <h2 style="margin-bottom:2px;">Order from local shops</h2>
-      <div class="sub" style="font-size:13px;color:var(--muted);">Soshanguve South \u00b7 delivery within 2 km</div>
+      <div class="sub" style="font-size:13px;color:var(--muted);">Soshanguve South · delivery within 2 km</div>
     </div>
     <div style="display:flex;gap:12px;align-items:center;">
       <input id="market-search" type="text" placeholder="Search shops or products" aria-label="Search" oninput="filterCards()">
@@ -38,50 +36,49 @@
   <div class="grid">
     <div class="card">
       <span class="biz">Thandi's Spaza</span>
-      <span class="tag">Groceries \u00b7 0.4 km</span>
+      <span class="tag">Groceries · 0.4 km</span>
       <p class="desc">Maize meal, cooking oil, bread and daily essentials.</p>
       <div class="row">
-        <span class="price">R 25 \u2014 bread loaf</span>
-        <div class="qty"><button type="button" onclick="addToCart(this,25)">\u2212</button><span>0</span><button type="button" onclick="addToCart(this,25)">+</button></div>
+        <span class="price">R 25 — bread loaf</span>
+        <div class="qty"><button type="button" onclick="addToCart(this,25)">−</button><span>0</span><button type="button" onclick="addToCart(this,25)">+</button></div>
       </div>
     </div>
     <div class="card cat-teal">
       <span class="biz">Mzansi Kota Corner</span>
-      <span class="tag">Food \u00b7 0.5 km</span>
+      <span class="tag">Food · 0.5 km</span>
       <p class="desc">Kotas, vetkoek, and cold drinks. Busiest at lunch.</p>
       <div class="row">
-        <span class="price">R 35 \u2014 full kota</span>
-        <div class="qty"><button type="button" onclick="addToCart(this,35)">\u2212</button><span>0</span><button type="button" onclick="addToCart(this,35)">+</button></div>
+        <span class="price">R 35 — full kota</span>
+        <div class="qty"><button type="button" onclick="addToCart(this,35)">−</button><span>0</span><button type="button" onclick="addToCart(this,35)">+</button></div>
       </div>
     </div>
     <div class="card cat-navy">
       <span class="biz">Nomvula's Fashions</span>
-      <span class="tag">Retail \u00b7 1.1 km</span>
+      <span class="tag">Retail · 1.1 km</span>
       <p class="desc">Clothing and alterations while you wait.</p>
       <div class="row">
-        <span class="price">R 120 \u2014 school shirt</span>
-        <div class="qty"><button type="button" onclick="addToCart(this,120)">\u2212</button><span>0</span><button type="button" onclick="addToCart(this,120)">+</button></div>
+        <span class="price">R 120 — school shirt</span>
+        <div class="qty"><button type="button" onclick="addToCart(this,120)">−</button><span>0</span><button type="button" onclick="addToCart(this,120)">+</button></div>
       </div>
     </div>
     <div class="card">
       <span class="biz">Boxer Corner Hardware</span>
-      <span class="tag">Retail \u00b7 0.9 km</span>
+      <span class="tag">Retail · 0.9 km</span>
       <p class="desc">Paint, tools, and building supplies.</p>
       <div class="row">
-        <span class="price">R 60 \u2014 paint brush set</span>
-        <div class="qty"><button type="button" onclick="addToCart(this,60)">\u2212</button><span>0</span><button type="button" onclick="addToCart(this,60)">+</button></div>
+        <span class="price">R 60 — paint brush set</span>
+        <div class="qty"><button type="button" onclick="addToCart(this,60)">−</button><span>0</span><button type="button" onclick="addToCart(this,60)">+</button></div>
       </div>
     </div>
   </div>
 
   <p style="margin-top:32px;font-size:14px;color:var(--muted);">
-    Already ordered? <a href="track.html" style="color:var(--ink);font-weight:500;">Track your delivery</a>
+    Already ordered? <a href="track.html" style="color:var(--blue);font-weight:600;">Track delivery</a>
+    · <a href="orders.html" style="color:var(--blue);font-weight:600;">View historic orders</a>
   </p>
 </main>
-
 <script src="../assets/app.js"></script>
 <script>
-  // Persist cart total for checkout page
   var _orig = addToCart;
   addToCart = function(btn, price){
     _orig(btn, price);
