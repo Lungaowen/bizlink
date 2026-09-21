@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driver \u2014 BizLink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="index.html" class="current">Driver</a>
+    <a href="../customer/index.html">Customer</a>
+    <a href="../dashboard/orders.html">Business</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name" id="drv-name">Kabelo</div>
+      <div class="biz-loc">Bakkie \u00b7 GP 482-KLM</div>
+      <nav>
+        <a href="index.html" class="current">Jobs</a>
+        <a href="active.html">Active job</a>
+        <a href="earnings.html">Earnings</a>
+      </nav>
+      <div style="margin-top:28px;padding:0 10px;">
+        <div class="online-toggle" id="online-toggle" onclick="toggleOnline()">
+          <span class="dot-online" id="online-dot"></span>
+          <span id="online-label">Online</span>
+        </div>
+      </div>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Available jobs</h2>
+          <div class="sub">Soshanguve South \u00b7 offers expire in 60s</div>
+        </div>
+      </div>
+
+      <div class="banner" id="offer-banner">
+        <span><b>New batch closed</b> \u2014 3 shops need stock from 2 suppliers.</span>
+        <span class="countdown" id="offer-timer">00:60</span>
+      </div>
+
+      <div class="job-card" id="job-offer">
+        <div class="job-card-head">
+          <div>
+            <div class="job-title">Bulk restock \u00b7 3 shops</div>
+            <div class="job-meta">Boitumelo Wholesalers + Central Distributors</div>
+          </div>
+          <div class="job-fee">R 95</div>
+        </div>
+        <ul class="job-stops">
+          <li><b>Collect</b> \u2014 Boitumelo Wholesalers (maize, oil)</li>
+          <li><b>Collect</b> \u2014 Central Distributors (airtime)</li>
+          <li><b>Deliver</b> \u2014 Thandi's Spaza, next to Boxer</li>
+          <li><b>Deliver</b> \u2014 Sipho's Corner, Block H</li>
+          <li><b>Deliver</b> \u2014 Mama Ntombi, near the big tree</li>
+        </ul>
+        <div class="job-foot">
+          <span>~14 km loop \u00b7 ~55 min</span>
+          <div class="cta-row" style="margin:0;">
+            <button class="btn-ghost" type="button" onclick="declineJob()">Decline</button>
+            <button class="btn-primary" type="button" onclick="acceptJob()">Accept job</button>
+          </div>
+        </div>
+      </div>
+
+      <p id="no-jobs" class="empty-note" style="display:none;">No open offers. Stay online \u2014 new batches notify you automatically.</p>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+<script>
+  var online = true;
+  var offerSecs = 60;
+  var offerTimer;
+
+  function toggleOnline(){
+    online = !online;
+    document.getElementById('online-dot').className = online ? 'dot-online' : 'dot-offline';
+    document.getElementById('online-label').textContent = online ? 'Online' : 'Offline';
+  }
+
+  function tickOffer(){
+    if(offerSecs <= 0){
+      clearInterval(offerTimer);
+      declineJob(true);
+      return;
+    }
+    offerSecs -= 1;
+    var m = Math.floor(offerSecs/60), s = offerSecs%60;
+    var el = document.getElementById('offer-timer');
+    if(el) el.textContent = (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
+  }
+
+  function acceptJob(){
+    clearInterval(offerTimer);
+    sessionStorage.setItem('bizlink_driver_job', JSON.stringify({
+      status: 'accepted',
+      fee: 95,
+      shops: 3,
+      eta: '55 min'
+    }));
+    sessionStorage.setItem('bizlink_batch_status', 'assigned');
+    sessionStorage.setItem('bizlink_driver', JSON.stringify({
+      name: 'Kabelo', vehicle: 'Bakkie', plate: 'GP 482-KLM', eta: '22 min', phone: '082 441 2290'
+    }));
+    window.location.href = 'active.html';
+  }
+
+  function declineJob(expired){
+    clearInterval(offerTimer);
+    document.getElementById('job-offer').style.display = 'none';
+    document.getElementById('offer-banner').style.display = 'none';
+    var note = document.getElementById('no-jobs');
+    note.style.display = 'block';
+    note.textContent = expired
+      ? 'Offer expired. Waiting for the next batch\u2026'
+      : 'Job declined. Waiting for the next batch\u2026';
+  }
+
+  offerTimer = setInterval(tickOffer, 1000);
+</script>
+</body>
+</html>
