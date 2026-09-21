@@ -110,7 +110,6 @@
         <div class="cta-row" style="margin-top:20px;">
           <a class="btn-ghost" href="orders.html">Orders</a>
           <a class="btn-ghost" href="index.html">Order again</a>
-          <button type="button" class="btn-ghost" id="replay-track">Replay</button>
         </div>
       </div>
     </div>
@@ -362,12 +361,6 @@
   if (demoBtn) {
     demoBtn.addEventListener('click', function () {
       runTracking(seedDemoOrder());
-    });
-  }
-  var replayBtn = $('replay-track');
-  if (replayBtn) {
-    replayBtn.addEventListener('click', function () {
-      runTracking(loadOrder() || seedDemoOrder());
     });
   }
 })();
