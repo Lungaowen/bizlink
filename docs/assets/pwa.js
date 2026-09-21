@@ -1,35 +1,35 @@
-/* Register BizLink PWA service worker */
+/* BizLink PWA — mobile-friendly service worker + install */
 (function () {
-  if (!('serviceWorker' in navigator)) return;
-
-  var swPath = '/bizlink/sw.js';
-  // Support both GitHub Pages project URL and local / root
-  var path = location.pathname;
-  if (path.indexOf('/bizlink') === 0) {
-    swPath = '/bizlink/sw.js';
-  } else if (path.indexOf('/docs') === 0) {
-    swPath = '/docs/sw.js';
-  } else {
-    // relative to current folder depth
-    var depth = path.split('/').filter(Boolean).length;
-    // if file is in a subfolder of docs, go up
-    if (/\/(customer|dashboard|driver|auth)\//.test(path)) {
-      swPath = '../sw.js';
-    } else {
-      swPath = 'sw.js';
+  function resolveSwUrl() {
+    var path = location.pathname || '';
+    // GitHub Pages project site: /bizlink/...
+    if (path.indexOf('/bizlink/') === 0 || path === '/bizlink') {
+      return '/bizlink/sw.js';
     }
+    if (/\/(customer|dashboard|driver|auth)\//.test(path)) {
+      return new URL('../sw.js', location.href).href;
+    }
+    return new URL('sw.js', location.href).href;
   }
 
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register(swPath).then(function (reg) {
-      console.log('[BizLink PWA] SW registered', reg.scope);
-    }).catch(function (err) {
-      // Fallback: try relative sw.js from site root docs
-      navigator.serviceWorker.register('sw.js').catch(function () {
-        console.warn('[BizLink PWA] SW registration failed', err);
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      var swUrl = resolveSwUrl();
+      navigator.serviceWorker.register(swUrl).then(function (reg) {
+        console.log('[BizLink PWA] registered', reg.scope);
+      }).catch(function (err) {
+        console.warn('[BizLink PWA] register failed', err);
       });
     });
-  });
+  }
+
+  // iOS: already in standalone?
+  var isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+  if (isStandalone) {
+    document.documentElement.classList.add('pwa-standalone');
+  }
 
   var deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', function (e) {
@@ -40,12 +40,23 @@
   });
 
   document.addEventListener('click', function (e) {
-    var t = e.target;
-    if (!t || t.id !== 'pwa-install' || !deferredPrompt) return;
+    var t = e.target && (e.target.id === 'pwa-install' ? e.target : e.target.closest && e.target.closest('#pwa-install'));
+    if (!t || !deferredPrompt) return;
+    e.preventDefault();
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function () {
       deferredPrompt = null;
       t.hidden = true;
     });
+  });
+
+  // Show iOS add-to-home tip if no beforeinstallprompt (Safari)
+  window.addEventListener('load', function () {
+    if (isStandalone) return;
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOS) return;
+    var tip = document.getElementById('ios-install-tip');
+    if (tip) tip.hidden = false;
   });
 })();
