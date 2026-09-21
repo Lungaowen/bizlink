@@ -163,3 +163,37 @@ tr:last-child td{border-bottom:none;}
 }
 .driver-line{font-size:14px;color:var(--ink);}
 .driver-meta{font-size:13px;color:var(--muted);}
+
+/* Driver online toggle + job cards */
+.online-toggle{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;cursor:pointer;
+  padding:8px 10px;border-radius:var(--radius);
+  border:1px solid var(--line);background:#fff;
+}
+.dot-online,.dot-offline{
+  width:10px;height:10px;border-radius:50%;
+}
+.dot-online{background:var(--teal);}
+.dot-offline{background:var(--muted);}
+.job-card{
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;background:#fff;margin-bottom:16px;
+}
+.job-card-head{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:14px;
+}
+.job-title{font-family:var(--serif);font-weight:600;font-size:17px;}
+.job-meta{font-size:13px;color:var(--muted);}
+.job-fee{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--teal);}
+.job-stops{list-style:none;margin:0 0 16px;padding:0;}
+.job-stops li{
+  font-size:14px;color:var(--ink-soft);padding:8px 0;
+  border-top:1px solid var(--line);
+}
+.job-stops li:first-child{border-top:none;}
+.job-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;color:var(--muted);flex-wrap:wrap;gap:12px;
+}
