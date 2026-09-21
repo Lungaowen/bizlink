@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payouts — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html">Orders</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html" class="current">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Payouts</h2>
+          <div class="sub">Paid weekly, minus BizLink's service fee</div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <span><b>Next payout</b> — Friday, for this week's marketplace sales</span>
+        <span class="countdown">R 1,890 estimated</span>
+      </div>
+
+      <table>
+        <thead><tr><th>Period</th><th>Gross sales</th><th>Service fee</th><th>Paid out</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>15–21 Sep</td><td>R 2,140</td><td>R 250</td><td>R 1,890</td><td><span class="status-pill waiting">Pending</span></td></tr>
+          <tr><td>8–14 Sep</td><td>R 1,980</td><td>R 231</td><td>R 1,749</td><td><span class="status-pill delivered">Paid</span></td></tr>
+          <tr><td>1–7 Sep</td><td>R 2,310</td><td>R 269</td><td>R 2,041</td><td><span class="status-pill delivered">Paid</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orders — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html" class="current">Orders</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Orders</h2>
+          <div class="sub">3 pending &middot; next collection today</div>
+        </div>
+        <a class="btn-primary" style="padding:10px 18px;font-size:14px;" href="new-order.html">New order</a>
+      </div>
+
+      <div class="banner success" id="added-banner" style="display:none;">
+        <span><b>Order added.</b> <span class="added-text"></span></span>
+      </div>
+
+      <div class="banner">
+        <span><b>Consolidation window open</b> — 2 nearby shops have joined this restock batch.</span>
+        <span class="countdown" id="countdown">closes in 42:00</span>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><div class="num">R 340</div><div class="label">Saved this month vs. solo courier</div></div>
+        <div class="stat"><div class="num">6</div><div class="label">Restocks this month</div></div>
+        <div class="stat"><div class="num">98%</div><div class="label">On-time delivery rate</div></div>
+      </div>
+
+      <table>
+        <thead><tr><th>Order</th><th>Supplier</th><th>Qty</th><th>Status</th></tr></thead>
+        <tbody id="order-rows">
+          <tr><td>Maize meal, 10kg</td><td>Boitumelo Wholesalers</td><td>12</td><td><span class="status-pill waiting">Batching</span></td></tr>
+          <tr><td>Cooking oil, 750ml</td><td>Boitumelo Wholesalers</td><td>24</td><td><span class="status-pill waiting">Batching</span></td></tr>
+          <tr><td>Airtime vouchers</td><td>Central Distributors</td><td>50</td><td><span class="status-pill collecting">Driver en route</span></td></tr>
+          <tr><td>Bread, white loaf</td><td>Sunrise Bakery</td><td>30</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+<script>
+  showAddedBannerIfNeeded();
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('added')){
+    var row = document.createElement('tr');
+    row.innerHTML = '<td>' + params.get('added') + '</td><td>' + params.get('supplier') +
+      '</td><td>' + params.get('qty') + '</td><td><span class="status-pill waiting">Batching</span></td>';
+    document.getElementById('order-rows').prepend(row);
+  }
+  var cd = document.getElementById('countdown');
+  if(cd) startCountdown(cd, 42*60);
+</script>
+</body>
+</html>

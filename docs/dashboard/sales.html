@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html">Orders</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html" class="current">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Sales</h2>
+          <div class="sub">This week &middot; via BizLink marketplace</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><div class="num">R 2,140</div><div class="label">Sales this week</div></div>
+        <div class="stat"><div class="num">63</div><div class="label">Orders fulfilled</div></div>
+        <div class="stat"><div class="num">R 34</div><div class="label">Average order value</div></div>
+      </div>
+
+      <div class="bars" aria-hidden="true">
+        <div class="bar" style="height:40%"></div>
+        <div class="bar" style="height:55%"></div>
+        <div class="bar" style="height:48%"></div>
+        <div class="bar peak" style="height:90%"></div>
+        <div class="bar" style="height:62%"></div>
+        <div class="bar" style="height:70%"></div>
+        <div class="bar" style="height:35%"></div>
+      </div>
+      <div class="bar-labels">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+
+      <h3 style="font-size:15px;">Best sellers</h3>
+      <table>
+        <thead><tr><th>Item</th><th>Units sold</th><th>Revenue</th></tr></thead>
+        <tbody>
+          <tr><td>Bread, white loaf</td><td>84</td><td>R 2,100</td></tr>
+          <tr><td>Cooking oil, 750ml</td><td>31</td><td>R 1,240</td></tr>
+          <tr><td>Airtime vouchers</td><td>112</td><td>R 1,120</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

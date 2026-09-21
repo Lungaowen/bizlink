@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketplace — BizLink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="index.html">Landing</a>
+    <a href="dashboard/orders.html">Business dashboard</a>
+    <a href="marketplace.html" class="current">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="market-head">
+    <div>
+      <h2 style="margin-bottom:2px;">Shops near you</h2>
+      <div class="sub" style="font-size:13px;color:var(--muted);">Soshanguve South &middot; delivery within 2&nbsp;km</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <input id="market-search" type="text" placeholder="Search shops or products" aria-label="Search shops or products" oninput="filterCards()">
+      <span class="cart-chip">Cart: R <span id="cart-total">0</span></span>
+    </div>
+  </div>
+
+  <p id="market-empty" class="empty-note" style="display:none;">No shops match that search. Try a different name or item.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="biz">Thandi's Spaza</span>
+      <span class="tag">Groceries &middot; 0.4 km</span>
+      <p class="desc">Maize meal, cooking oil, bread and daily essentials, restocked twice a week.</p>
+      <div class="row">
+        <span class="price">R 25 — bread loaf</span>
+        <div class="qty"><button onclick="addToCart(this,25)">&minus;</button><span>0</span><button onclick="addToCart(this,25)">+</button></div>
+      </div>
+    </div>
+
+    <div class="card cat-teal">
+      <span class="biz">Sipho's Barber</span>
+      <span class="tag">Services &middot; 0.7 km</span>
+      <p class="desc">Walk-ins and bookings. Fade, line-up, and beard trim.</p>
+      <div class="row">
+        <span class="price">R 80 — fade cut</span>
+        <div class="qty"><button onclick="addToCart(this,80)">&minus;</button><span>0</span><button onclick="addToCart(this,80)">+</button></div>
+      </div>
+    </div>
+
+    <div class="card cat-navy">
+      <span class="biz">Nomvula's Fashions</span>
+      <span class="tag">Retail &middot; 1.1 km</span>
+      <p class="desc">Second-hand and new clothing, alterations while you wait.</p>
+      <div class="row">
+        <span class="price">R 120 — school shirt</span>
+        <div class="qty"><button onclick="addToCart(this,120)">&minus;</button><span>0</span><button onclick="addToCart(this,120)">+</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="biz">Mzansi Kota Corner</span>
+      <span class="tag">Food &middot; 0.5 km</span>
+      <p class="desc">Kotas, vetkoek, and cold drinks. Busiest at lunch.</p>
+      <div class="row">
+        <span class="price">R 35 — full kota</span>
+        <div class="qty"><button onclick="addToCart(this,35)">&minus;</button><span>0</span><button onclick="addToCart(this,35)">+</button></div>
+      </div>
+    </div>
+
+    <div class="card cat-teal">
+      <span class="biz">Lindiwe's Salon</span>
+      <span class="tag">Services &middot; 1.3 km</span>
+      <p class="desc">Braids, relaxers, and wash-and-set. Book a slot ahead.</p>
+      <div class="row">
+        <span class="price">R 150 — braids (short)</span>
+        <div class="qty"><button onclick="addToCart(this,150)">&minus;</button><span>0</span><button onclick="addToCart(this,150)">+</button></div>
+      </div>
+    </div>
+
+    <div class="card cat-navy">
+      <span class="biz">Boxer Corner Hardware</span>
+      <span class="tag">Retail &middot; 0.9 km</span>
+      <p class="desc">Paint, tools, and building supplies for small jobs.</p>
+      <div class="row">
+        <span class="price">R 60 — paint brush set</span>
+        <div class="qty"><button onclick="addToCart(this,60)">&minus;</button><span>0</span><button onclick="addToCart(this,60)">+</button></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

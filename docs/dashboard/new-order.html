@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New order — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html" class="current">Orders</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>New order</h2>
+          <div class="sub">Joins the next open consolidation batch automatically</div>
+        </div>
+      </div>
+
+      <p id="order-error" style="display:none;color:var(--red);font-size:14px;margin-bottom:16px;"></p>
+
+      <form onsubmit="return submitOrder(event)" style="max-width:440px;">
+        <div class="form-field">
+          <label for="product">Product</label>
+          <input id="product" name="product" type="text" placeholder="e.g. Maize meal, 10kg" required>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="supplier">Supplier</label>
+            <select id="supplier" name="supplier">
+              <option>Boitumelo Wholesalers</option>
+              <option>Central Distributors</option>
+              <option>Sunrise Bakery</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="qty">Quantity</label>
+            <input id="qty" name="qty" type="number" min="1" value="1" required>
+          </div>
+        </div>
+        <div class="cta-row" style="margin-top:8px;">
+          <button class="btn-primary" type="submit">Add to batch</button>
+          <a class="btn-ghost" href="orders.html">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

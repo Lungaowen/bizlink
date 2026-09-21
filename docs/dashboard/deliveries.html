@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deliveries — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html">Orders</a>
+        <a href="deliveries.html" class="current">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Deliveries</h2>
+          <div class="sub">1 in progress &middot; driver Kabelo, bakkie</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:15px;">Airtime vouchers &middot; Central Distributors</h3>
+      <ul class="timeline">
+        <li class="done"><div class="dot"></div><div><div class="t-title">Order placed</div><div class="t-meta">Today, 07:12 — joined consolidation batch with 2 other shops</div></div></li>
+        <li class="done"><div class="dot"></div><div><div class="t-title">Collected from supplier</div><div class="t-meta">Today, 09:40 — Central Distributors, Soshanguve depot</div></div></li>
+        <li class="active"><div class="dot"></div><div><div class="t-title">Out for delivery</div><div class="t-meta">Driver Kabelo &middot; ETA 11:20 &middot; next to Boxer, near the big tree</div></div></li>
+        <li><div class="dot"></div><div><div class="t-title">Delivered</div><div class="t-meta">Pending</div></div></li>
+      </ul>
+
+      <h3 style="font-size:15px;margin-top:32px;">Recent deliveries</h3>
+      <table>
+        <thead><tr><th>Order</th><th>Driver</th><th>Delivered</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Bread, white loaf</td><td>Kabelo</td><td>Yesterday, 08:15</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          <tr><td>Cooking oil, 750ml</td><td>Precious</td><td>2 days ago</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          <tr><td>Rice, 5kg</td><td>Kabelo</td><td>4 days ago</td><td><span class="status-pill overdue">Late (45 min)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>
