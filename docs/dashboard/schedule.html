@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule delivery — BizLink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html">Orders</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="schedule.html" class="current">Schedule</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Schedule delivery</h2>
+          <div class="sub">Book a restock collection slot — extends dispatch flow</div>
+        </div>
+      </div>
+
+      <div class="banner" id="slot-banner" style="display:none;"></div>
+
+      <form id="sch-form" class="job-card" style="margin-bottom:24px;max-width:480px;">
+        <div class="form-field">
+          <label for="date">Preferred date</label>
+          <input id="date" type="date" required>
+        </div>
+        <div class="form-field">
+          <label for="slot">Time slot</label>
+          <select id="slot" required>
+            <option value="">Select slot…</option>
+            <option>06:00 – 08:00 (early restock)</option>
+            <option>08:00 – 10:00</option>
+            <option>10:00 – 12:00</option>
+            <option>14:00 – 16:00</option>
+            <option>16:00 – 18:00</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="note">Note for driver</label>
+          <input id="note" placeholder="e.g. Gate code 4421, call on arrival">
+        </div>
+        <button class="btn-primary" type="submit">Schedule slot</button>
+      </form>
+
+      <h3 style="font-size:15px;">Upcoming schedules</h3>
+      <table>
+        <thead><tr><th>Date</th><th>Slot</th><th>Note</th><th>Status</th></tr></thead>
+        <tbody id="sch-rows"></tbody>
+      </table>
+
+      <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+        After scheduling, close a batch on <a href="orders.html" style="color:var(--blue);font-weight:600;">Orders</a> so drivers see the preferred window.
+      </p>
+    </div>
+  </div>
+</main>
+<script src="../assets/store.js"></script>
+<script>
+  (function () {
+    var d = document.getElementById('date');
+    var t = new Date();
+    t.setDate(t.getDate() + 1);
+    d.value = t.toISOString().slice(0, 10);
+    d.min = new Date().toISOString().slice(0, 10);
+  })();
+
+  function render() {
+    var list = BizLinkStore.listSchedules();
+    var rows = document.getElementById('sch-rows');
+    if (!list.length) {
+      rows.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">No schedules yet.</td></tr>';
+      return;
+    }
+    rows.innerHTML = list.map(function (s) {
+      return '<tr><td>' + s.date + '</td><td>' + s.slot + '</td><td>' + (s.note || '—') +
+        '</td><td><span class="status-pill waiting">' + s.status + '</span></td></tr>';
+    }).join('');
+  }
+
+  document.getElementById('sch-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var r = BizLinkStore.addSchedule({
+      type: 'restock',
+      date: document.getElementById('date').value,
+      slot: document.getElementById('slot').value,
+      note: document.getElementById('note').value,
+      status: 'scheduled'
+    });
+    if (!r.ok) { alert(r.error); return; }
+    var b = document.getElementById('slot-banner');
+    b.style.display = 'flex';
+    b.className = 'banner success';
+    b.innerHTML = '<span><b>Scheduled.</b> ' + r.schedule.date + ' · ' + r.schedule.slot + '</span>';
+    render();
+  });
+  render();
+</script>
+</body>
+</html>
