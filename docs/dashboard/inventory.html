@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory — BizLink dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="orders.html" class="current">Business dashboard</a>
+    <a href="../marketplace.html">Marketplace</a>
+  </div>
+</header>
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Thandi's Spaza</div>
+      <div class="biz-loc">Soshanguve South</div>
+      <nav>
+        <a href="orders.html">Orders</a>
+        <a href="inventory.html" class="current">Inventory</a>
+        <a href="schedule.html">Schedule</a>
+        <a href="deliveries.html">Deliveries</a>
+        <a href="sales.html">Sales</a>
+        <a href="payouts.html">Payouts</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Upload inventory</h2>
+          <div class="sub">Stock available for marketplace &amp; restock planning</div>
+        </div>
+      </div>
+
+      <div class="banner success" id="inv-msg" style="display:none;"></div>
+
+      <form id="inv-form" class="job-card" style="margin-bottom:24px;">
+        <h3 style="font-size:15px;margin-bottom:12px;">Add product</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="name">Product name</label>
+            <input id="name" name="name" required placeholder="e.g. Rice, 5kg">
+          </div>
+          <div class="form-field">
+            <label for="sku">SKU</label>
+            <input id="sku" name="sku" placeholder="Optional">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="qty">Quantity on hand</label>
+            <input id="qty" name="qty" type="number" min="0" value="10" required>
+          </div>
+          <div class="form-field">
+            <label for="price">Unit price (R)</label>
+            <input id="price" name="price" type="number" min="0" step="0.01" value="25" required>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="unit">Unit</label>
+          <select id="unit" name="unit">
+            <option>unit</option>
+            <option>loaf</option>
+            <option>bag</option>
+            <option>bottle</option>
+            <option>pack</option>
+          </select>
+        </div>
+        <button class="btn-primary" type="submit">Upload item</button>
+      </form>
+
+      <table>
+        <thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Price</th><th>Updated</th><th></th></tr></thead>
+        <tbody id="inv-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<script src="../assets/store.js"></script>
+<script>
+  function render() {
+    var rows = document.getElementById('inv-rows');
+    var list = BizLinkStore.listInventory();
+    rows.innerHTML = list.map(function (item) {
+      return '<tr data-id="' + item.id + '">' +
+        '<td><b>' + esc(item.name) + '</b></td>' +
+        '<td>' + esc(item.sku) + '</td>' +
+        '<td><input type="number" min="0" value="' + item.qty + '" data-field="qty" style="width:70px;padding:6px;border:1px solid var(--line);border-radius:6px;"></td>' +
+        '<td>R ' + item.price + ' / ' + esc(item.unit) + '</td>' +
+        '<td style="font-size:12px;color:var(--muted);">' + (item.updatedAt ? new Date(item.updatedAt).toLocaleString() : '—') + '</td>' +
+        '<td><button type="button" class="btn-ghost" style="padding:6px 10px;font-size:12px;" data-save="' + item.id + '">Update qty</button></td>' +
+      '</tr>';
+    }).join('') || '<tr><td colspan="6" style="color:var(--muted);">No inventory yet.</td></tr>';
+
+    rows.querySelectorAll('[data-save]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tr = btn.closest('tr');
+        var qty = tr.querySelector('[data-field=qty]').value;
+        var r = BizLinkStore.updateInventory(btn.getAttribute('data-save'), { qty: qty });
+        if (r.ok) {
+          flash('Quantity updated for ' + r.item.name);
+          render();
+        }
+      });
+    });
+  }
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function flash(text) {
+    var el = document.getElementById('inv-msg');
+    el.style.display = 'flex';
+    el.innerHTML = '<span><b>Saved.</b> ' + text + '</span>';
+  }
+  document.getElementById('inv-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var r = BizLinkStore.addInventory({
+      name: document.getElementById('name').value,
+      sku: document.getElementById('sku').value,
+      qty: document.getElementById('qty').value,
+      price: document.getElementById('price').value,
+      unit: document.getElementById('unit').value
+    });
+    if (!r.ok) { alert(r.error); return; }
+    e.target.reset();
+    document.getElementById('qty').value = 10;
+    document.getElementById('price').value = 25;
+    flash(r.item.name + ' added to inventory.');
+    render();
+  });
+  render();
+</script>
+</body>
+</html>
