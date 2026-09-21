@@ -35,24 +35,41 @@
       <div class="panel-head">
         <div>
           <h2>Active job</h2>
-          <div class="sub">Fee R 95 · 3 shops · bulk restock · navigate through trip</div>
+          <div class="sub" id="job-sub">Navigate through trip · update ETA anytime</div>
         </div>
         <span class="status-pill collecting" id="job-status-pill">Collecting</span>
       </div>
 
+      <div class="job-card" style="margin-bottom:20px;background:var(--yellow-soft);border-color:rgba(244,197,66,.45);">
+        <div class="form-row" style="align-items:flex-end;">
+          <div class="form-field" style="margin:0;flex:1;">
+            <label for="live-eta"><b>Update delivery time estimate</b></label>
+            <select id="live-eta">
+              <option value="15">~15 min to next stop</option>
+              <option value="25">~25 min</option>
+              <option value="40">~40 min remaining</option>
+              <option value="55" selected>~55 min remaining</option>
+              <option value="70">~70 min remaining</option>
+            </select>
+          </div>
+          <button class="btn-primary" type="button" id="save-eta" style="padding:12px 18px;">Share ETA</button>
+        </div>
+        <p id="eta-saved" style="font-size:13px;color:var(--muted);margin:10px 0 0;">Shops see your estimate on Track delivery.</p>
+      </div>
+
       <ul class="timeline" id="job-steps">
-        <li class="done" data-step="0"><div class="dot"></div><div><div class="t-title">Job accepted</div><div class="t-meta">You took this batch</div></div></li>
+        <li class="done" data-step="0"><div class="dot"></div><div><div class="t-title">Job accepted</div><div class="t-meta">ETA shared with businesses</div></div></li>
         <li class="active" data-step="1"><div class="dot"></div><div><div class="t-title">Collect — Boitumelo Wholesalers</div><div class="t-meta">Maize meal × 12, cooking oil × 24</div></div></li>
         <li data-step="2"><div class="dot"></div><div><div class="t-title">Collect — Central Distributors</div><div class="t-meta">Airtime vouchers × 50</div></div></li>
         <li data-step="3"><div class="dot"></div><div><div class="t-title">Deliver — Thandi's Spaza</div><div class="t-meta">Next to Boxer, near the big tree</div></div></li>
         <li data-step="4"><div class="dot"></div><div><div class="t-title">Deliver — Sipho's Corner</div><div class="t-meta">Block H, yellow gate</div></div></li>
         <li data-step="5"><div class="dot"></div><div><div class="t-title">Deliver — Mama Ntombi</div><div class="t-meta">Near the big tree + pin</div></div></li>
-        <li data-step="6"><div class="dot"></div><div><div class="t-title">Job complete</div><div class="t-meta">Fee released after last drop</div></div></li>
+        <li data-step="6"><div class="dot"></div><div><div class="t-title">Job complete</div><div class="t-meta">Business can rate you</div></div></li>
       </ul>
 
       <div class="cta-row" style="margin-top:24px;">
         <button class="btn-primary" type="button" id="next-step-btn" onclick="advanceStep()">Mark collected</button>
-        <a class="btn-ghost" href="tel:0824412290">Call business</a>
+        <a class="btn-ghost" href="../dashboard/deliveries.html">Business track view</a>
       </div>
     </div>
   </div>
@@ -60,6 +77,51 @@
 <script src="../assets/store.js"></script>
 <script>
   var step = 1;
+
+  function loadJob() {
+    try {
+      var job = JSON.parse(sessionStorage.getItem('bizlink_driver_job') || '{}');
+      if (job.etaMinutes) {
+        var sel = document.getElementById('live-eta');
+        if (sel.querySelector('option[value="' + job.etaMinutes + '"]')) {
+          sel.value = String(job.etaMinutes);
+        }
+      }
+      if (job.etaEstimate) {
+        document.getElementById('job-sub').textContent =
+          'Current ETA ' + job.etaEstimate + ' · share updates anytime';
+      }
+    } catch (e) {}
+  }
+  loadJob();
+
+  function patchJob(fields) {
+    var job = {};
+    try { job = JSON.parse(sessionStorage.getItem('bizlink_driver_job') || '{}'); } catch (e) {}
+    Object.keys(fields).forEach(function (k) { job[k] = fields[k]; });
+    sessionStorage.setItem('bizlink_driver_job', JSON.stringify(job));
+    var driver = {};
+    try { driver = JSON.parse(sessionStorage.getItem('bizlink_driver') || '{}'); } catch (e) {}
+    if (fields.etaEstimate) {
+      driver.eta = fields.etaEstimate;
+      sessionStorage.setItem('bizlink_driver', JSON.stringify(driver));
+    }
+  }
+
+  document.getElementById('save-eta').addEventListener('click', function () {
+    var mins = parseInt(document.getElementById('live-eta').value, 10) || 55;
+    var label = '~' + mins + ' min';
+    patchJob({
+      etaEstimate: label,
+      etaMinutes: mins,
+      etaNote: 'Updated mid-route by driver'
+    });
+    document.getElementById('eta-saved').textContent =
+      'ETA ' + label + ' shared with shops on Track delivery.';
+    document.getElementById('eta-saved').style.color = 'var(--success)';
+    document.getElementById('job-sub').textContent = 'Current ETA ' + label;
+  });
+
   function advanceStep(){
     if(step >= 6) return;
     var items = document.querySelectorAll('#job-steps li');
@@ -70,19 +132,26 @@
     }
     var btn = document.getElementById('next-step-btn');
     var pill = document.getElementById('job-status-pill');
+
     if(step <= 2){
       btn.textContent = 'Mark collected';
       pill.textContent = 'Collecting';
+      patchJob({ phase: 'collecting' });
     } else if(step <= 5){
       btn.textContent = 'Mark delivered';
       pill.textContent = 'Out for delivery';
       pill.className = 'status-pill collecting';
+      patchJob({ phase: 'delivering' });
     } else {
       btn.textContent = 'Job complete';
       btn.disabled = true;
       pill.textContent = 'Complete';
       pill.className = 'status-pill delivered';
-      sessionStorage.setItem('bizlink_driver_job', JSON.stringify({status:'complete', fee:95}));
+      patchJob({
+        status: 'complete',
+        phase: 'complete',
+        driverName: 'Kabelo'
+      });
       if (window.BizLinkStore) {
         BizLinkStore.addTrip({
           date: 'Today',
@@ -92,7 +161,9 @@
           km: 14
         });
       }
-      setTimeout(function(){ window.location.href = 'trips.html'; }, 1200);
+      setTimeout(function(){
+        window.location.href = '../dashboard/deliveries.html?complete=1';
+      }, 1000);
     }
   }
 </script>
