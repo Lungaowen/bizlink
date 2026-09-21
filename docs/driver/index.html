@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
 <header class="top">
   <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
   <div class="top-links">
@@ -20,7 +19,6 @@
     <a href="../dashboard/orders.html">Business</a>
   </div>
 </header>
-
 <main>
   <div class="app-shell">
     <aside class="sidebar">
@@ -29,6 +27,7 @@
       <nav>
         <a href="index.html" class="current">Jobs</a>
         <a href="active.html">Active job</a>
+        <a href="trips.html">Historic trips</a>
         <a href="earnings.html">Earnings</a>
       </nav>
       <div style="margin-top:28px;padding:0 10px;">
@@ -66,28 +65,40 @@
           <li><b>Deliver</b> — Sipho's Corner, Block H</li>
           <li><b>Deliver</b> — Mama Ntombi, near the big tree</li>
         </ul>
+
+        <div class="form-field" style="margin:16px 0 8px;">
+          <label for="eta-mins"><b>Your delivery time estimate</b></label>
+          <select id="eta-mins">
+            <option value="25">~25 min to first shop</option>
+            <option value="40">~40 min full loop</option>
+            <option value="55" selected>~55 min full loop</option>
+            <option value="70">~70 min (heavy traffic)</option>
+            <option value="90">~90 min</option>
+          </select>
+          <span style="font-size:12px;color:var(--muted);">Businesses and customers see this ETA on tracking.</span>
+        </div>
+
         <div class="job-foot">
-          <span id="job-loop">~14 km loop · ~55 min</span>
+          <span id="job-loop">~14 km loop</span>
           <div class="cta-row" style="margin:0;">
             <button class="btn-ghost" type="button" onclick="declineJob()">Decline</button>
-            <button class="btn-primary" type="button" onclick="acceptJob()">Accept job</button>
+            <button class="btn-primary" type="button" onclick="acceptJob()">Accept &amp; share ETA</button>
           </div>
         </div>
       </div>
 
       <div class="banner success" id="accepted-banner" style="display:none;">
-        <span><b>Job accepted.</b> Head to the first supplier stop.</span>
+        <span><b>Job accepted.</b> ETA shared with the shops.</span>
         <a class="btn-ghost" style="padding:6px 12px;font-size:12px;" href="active.html">Open active job</a>
       </div>
 
       <p id="no-jobs" class="empty-note">No open offers. Stay online — when a business closes a batch, the job appears here.</p>
       <p style="font-size:13px;color:var(--muted);margin-top:8px;">
-        Tip: open <a href="../dashboard/orders.html" style="color:var(--blue);font-weight:600;">Business → Orders</a>, click <b>Close batch now</b>, then come back here and accept.
+        Tip: open <a href="../dashboard/orders.html" style="color:var(--blue);font-weight:600;">Business → Orders</a>, click <b>Close batch now</b>, then accept and set your ETA.
       </p>
     </div>
   </div>
 </main>
-
 <script>
   var online = true;
   var offerSecs = 60;
@@ -121,7 +132,12 @@
     document.getElementById('job-title').textContent = 'Bulk restock · ' + (job.shops || 3) + ' shops';
     document.getElementById('job-meta').textContent = (job.suppliers || []).join(' + ') || 'Local suppliers';
     document.getElementById('job-fee').textContent = 'R ' + (job.fee || 95);
-    document.getElementById('job-loop').textContent = '~' + (job.km || 14) + ' km loop · ~' + (job.mins || 55) + ' min';
+    document.getElementById('job-loop').textContent = '~' + (job.km || 14) + ' km loop';
+    if (job.mins) {
+      var sel = document.getElementById('eta-mins');
+      var opt = sel.querySelector('option[value="' + job.mins + '"]');
+      if (opt) sel.value = String(job.mins);
+    }
     offerSecs = 60;
     if(offerTimer) clearInterval(offerTimer);
     offerTimer = setInterval(tickOffer, 1000);
@@ -129,22 +145,29 @@
 
   function acceptJob(){
     if(offerTimer) clearInterval(offerTimer);
+    var mins = parseInt(document.getElementById('eta-mins').value, 10) || 55;
+    var etaLabel = '~' + mins + ' min';
     var driver = {
       name: 'Kabelo',
       vehicle: 'Bakkie',
       plate: 'GP 482-KLM',
-      eta: '22 min',
+      eta: etaLabel,
       phone: '082 441 2290'
     };
     sessionStorage.setItem('bizlink_driver_job', JSON.stringify({
       status: 'accepted',
+      phase: 'accepted',
       fee: (openJob && openJob.fee) || 95,
       shops: (openJob && openJob.shops) || 3,
-      eta: '55 min'
+      etaEstimate: etaLabel,
+      etaMinutes: mins,
+      etaNote: 'Driver estimate at accept',
+      driverName: 'Kabelo'
     }));
     sessionStorage.setItem('bizlink_batch_status', 'assigned');
     sessionStorage.setItem('bizlink_driver', JSON.stringify(driver));
     sessionStorage.removeItem('bizlink_open_job');
+    sessionStorage.removeItem('bizlink_last_rating');
 
     document.getElementById('job-offer').style.display = 'none';
     document.getElementById('offer-banner').style.display = 'none';
@@ -166,7 +189,6 @@
       : 'Job declined. Waiting for the next batch…';
   }
 
-  // Load open job from business batch close
   try {
     var raw = sessionStorage.getItem('bizlink_open_job');
     var status = sessionStorage.getItem('bizlink_batch_status');
@@ -178,7 +200,6 @@
     }
   } catch(e){}
 
-  // Poll for new jobs if business closes batch in another tab
   setInterval(function(){
     if(!online) return;
     if(document.getElementById('job-offer').style.display === 'block') return;
