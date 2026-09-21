@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Driver \u2014 BizLink</title>
+<title>Driver — BizLink</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="biz-name" id="drv-name">Kabelo</div>
-      <div class="biz-loc">Bakkie \u00b7 GP 482-KLM</div>
+      <div class="biz-loc">Bakkie · GP 482-KLM</div>
       <nav>
         <a href="index.html" class="current">Jobs</a>
         <a href="active.html">Active job</a>
@@ -42,32 +42,32 @@
       <div class="panel-head">
         <div>
           <h2>Available jobs</h2>
-          <div class="sub">Soshanguve South \u00b7 offers expire in 60s</div>
+          <div class="sub">Soshanguve South · offers expire in 60s</div>
         </div>
       </div>
 
-      <div class="banner" id="offer-banner">
-        <span><b>New batch closed</b> \u2014 3 shops need stock from 2 suppliers.</span>
-        <span class="countdown" id="offer-timer">00:60</span>
+      <div class="banner" id="offer-banner" style="display:none;">
+        <span><b>New batch closed</b> — shops need stock from suppliers.</span>
+        <span class="countdown" id="offer-timer">01:00</span>
       </div>
 
-      <div class="job-card" id="job-offer">
+      <div class="job-card" id="job-offer" style="display:none;">
         <div class="job-card-head">
           <div>
-            <div class="job-title">Bulk restock \u00b7 3 shops</div>
-            <div class="job-meta">Boitumelo Wholesalers + Central Distributors</div>
+            <div class="job-title" id="job-title">Bulk restock · 3 shops</div>
+            <div class="job-meta" id="job-meta">Boitumelo Wholesalers + Central Distributors</div>
           </div>
-          <div class="job-fee">R 95</div>
+          <div class="job-fee" id="job-fee">R 95</div>
         </div>
         <ul class="job-stops">
-          <li><b>Collect</b> \u2014 Boitumelo Wholesalers (maize, oil)</li>
-          <li><b>Collect</b> \u2014 Central Distributors (airtime)</li>
-          <li><b>Deliver</b> \u2014 Thandi's Spaza, next to Boxer</li>
-          <li><b>Deliver</b> \u2014 Sipho's Corner, Block H</li>
-          <li><b>Deliver</b> \u2014 Mama Ntombi, near the big tree</li>
+          <li><b>Collect</b> — Boitumelo Wholesalers (maize, oil)</li>
+          <li><b>Collect</b> — Central Distributors (airtime)</li>
+          <li><b>Deliver</b> — Thandi's Spaza, next to Boxer</li>
+          <li><b>Deliver</b> — Sipho's Corner, Block H</li>
+          <li><b>Deliver</b> — Mama Ntombi, near the big tree</li>
         </ul>
         <div class="job-foot">
-          <span>~14 km loop \u00b7 ~55 min</span>
+          <span id="job-loop">~14 km loop · ~55 min</span>
           <div class="cta-row" style="margin:0;">
             <button class="btn-ghost" type="button" onclick="declineJob()">Decline</button>
             <button class="btn-primary" type="button" onclick="acceptJob()">Accept job</button>
@@ -75,16 +75,24 @@
         </div>
       </div>
 
-      <p id="no-jobs" class="empty-note" style="display:none;">No open offers. Stay online \u2014 new batches notify you automatically.</p>
+      <div class="banner success" id="accepted-banner" style="display:none;">
+        <span><b>Job accepted.</b> Head to the first supplier stop.</span>
+        <a class="btn-ghost" style="padding:6px 12px;font-size:12px;" href="active.html">Open active job</a>
+      </div>
+
+      <p id="no-jobs" class="empty-note">No open offers. Stay online — when a business closes a batch, the job appears here.</p>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">
+        Tip: open <a href="../dashboard/orders.html" style="color:var(--blue);font-weight:600;">Business → Orders</a>, click <b>Close batch now</b>, then come back here and accept.
+      </p>
     </div>
   </div>
 </main>
 
-<script src="../assets/app.js"></script>
 <script>
   var online = true;
   var offerSecs = 60;
-  var offerTimer;
+  var offerTimer = null;
+  var openJob = null;
 
   function toggleOnline(){
     online = !online;
@@ -104,33 +112,82 @@
     if(el) el.textContent = (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
   }
 
+  function showOffer(job){
+    openJob = job;
+    document.getElementById('no-jobs').style.display = 'none';
+    document.getElementById('offer-banner').style.display = 'flex';
+    document.getElementById('job-offer').style.display = 'block';
+    document.getElementById('accepted-banner').style.display = 'none';
+    document.getElementById('job-title').textContent = 'Bulk restock · ' + (job.shops || 3) + ' shops';
+    document.getElementById('job-meta').textContent = (job.suppliers || []).join(' + ') || 'Local suppliers';
+    document.getElementById('job-fee').textContent = 'R ' + (job.fee || 95);
+    document.getElementById('job-loop').textContent = '~' + (job.km || 14) + ' km loop · ~' + (job.mins || 55) + ' min';
+    offerSecs = 60;
+    if(offerTimer) clearInterval(offerTimer);
+    offerTimer = setInterval(tickOffer, 1000);
+  }
+
   function acceptJob(){
-    clearInterval(offerTimer);
+    if(offerTimer) clearInterval(offerTimer);
+    var driver = {
+      name: 'Kabelo',
+      vehicle: 'Bakkie',
+      plate: 'GP 482-KLM',
+      eta: '22 min',
+      phone: '082 441 2290'
+    };
     sessionStorage.setItem('bizlink_driver_job', JSON.stringify({
       status: 'accepted',
-      fee: 95,
-      shops: 3,
+      fee: (openJob && openJob.fee) || 95,
+      shops: (openJob && openJob.shops) || 3,
       eta: '55 min'
     }));
     sessionStorage.setItem('bizlink_batch_status', 'assigned');
-    sessionStorage.setItem('bizlink_driver', JSON.stringify({
-      name: 'Kabelo', vehicle: 'Bakkie', plate: 'GP 482-KLM', eta: '22 min', phone: '082 441 2290'
-    }));
-    window.location.href = 'active.html';
+    sessionStorage.setItem('bizlink_driver', JSON.stringify(driver));
+    sessionStorage.removeItem('bizlink_open_job');
+
+    document.getElementById('job-offer').style.display = 'none';
+    document.getElementById('offer-banner').style.display = 'none';
+    document.getElementById('accepted-banner').style.display = 'flex';
+    document.getElementById('no-jobs').style.display = 'none';
+
+    setTimeout(function(){ window.location.href = 'active.html'; }, 900);
   }
 
   function declineJob(expired){
-    clearInterval(offerTimer);
+    if(offerTimer) clearInterval(offerTimer);
+    sessionStorage.removeItem('bizlink_open_job');
     document.getElementById('job-offer').style.display = 'none';
     document.getElementById('offer-banner').style.display = 'none';
     var note = document.getElementById('no-jobs');
     note.style.display = 'block';
     note.textContent = expired
-      ? 'Offer expired. Waiting for the next batch\u2026'
-      : 'Job declined. Waiting for the next batch\u2026';
+      ? 'Offer expired. Waiting for the next batch…'
+      : 'Job declined. Waiting for the next batch…';
   }
 
-  offerTimer = setInterval(tickOffer, 1000);
+  // Load open job from business batch close
+  try {
+    var raw = sessionStorage.getItem('bizlink_open_job');
+    var status = sessionStorage.getItem('bizlink_batch_status');
+    if(raw && status === 'notifying'){
+      showOffer(JSON.parse(raw));
+    } else if(status === 'assigned'){
+      document.getElementById('no-jobs').style.display = 'none';
+      document.getElementById('accepted-banner').style.display = 'flex';
+    }
+  } catch(e){}
+
+  // Poll for new jobs if business closes batch in another tab
+  setInterval(function(){
+    if(!online) return;
+    if(document.getElementById('job-offer').style.display === 'block') return;
+    if(sessionStorage.getItem('bizlink_batch_status') === 'assigned') return;
+    var raw = sessionStorage.getItem('bizlink_open_job');
+    if(raw && sessionStorage.getItem('bizlink_batch_status') === 'notifying'){
+      try { showOffer(JSON.parse(raw)); } catch(e){}
+    }
+  }, 1500);
 </script>
 </body>
 </html>
