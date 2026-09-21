@@ -59,3 +59,76 @@ flowchart TD
     Cons["Consumer"] -->|"% service fee\non purchases"| BL
     Drv["Driver"] -->|"Monthly subscription\n(by vehicle type)"| BL
 ```
+
+## Diagrams
+
+### Sequence diagram
+
+A business ordering restock, BizLink consolidating and dispatching a driver, and a consumer purchase.
+
+```mermaid
+sequenceDiagram
+    participant Biz as Township business
+    participant App as BizLink platform
+    participant Sup as Supplier
+    participant Drv as Driver
+    participant Con as Consumer
+
+    Biz->>App: Place stock order
+    App->>App: Consolidate with nearby orders
+    App->>Sup: Request bulk collection
+    Sup-->>App: Confirm stock ready
+    App->>Drv: Assign collection & delivery route
+    Drv->>Sup: Collect consolidated stock
+    Drv->>Biz: Deliver stock
+    Biz->>App: Confirm receipt & pay service fee
+    Con->>Biz: Purchase product
+    Biz->>App: Log sale
+    App->>Drv: Assign consumer delivery (if needed)
+    Drv->>Con: Deliver goods
+    Con->>App: Pay (service fee applied)
+```
+
+### Data flow diagram (DFD)
+
+External entities (rounded), processes (circles), and data stores (cylinders).
+
+```mermaid
+flowchart LR
+    Sup([Supplier])
+    Biz([Township business])
+    Con([Consumer])
+    Drv([Driver])
+
+    Sup -->|Stock data| P1(("1.0 Bulk collection &<br/>consolidation"))
+    Biz -->|Order request| P1
+    P1 -->|Consolidated order| DS1[(Orders DB)]
+    P1 -->|Route plan| P2(("2.0 Delivery<br/>scheduling"))
+    DS1 -->|Order details| P2
+    P2 -->|Assignment| Drv
+    Drv -->|Delivery confirmation| P3(("3.0 Payment &<br/>fee processing"))
+    Con -->|Purchase data| P3
+    P3 -->|Transaction record| DS2[(Payments DB)]
+    P3 -->|Receipt| Biz
+    P3 -->|Receipt| Con
+```
+
+### Activity diagram
+
+End-to-end order fulfillment, from a business placing an order to payment.
+
+```mermaid
+flowchart TD
+    Start([Business places order]) --> Check{Order within<br/>consolidation window?}
+    Check -->|Yes| Wait[Wait & batch with<br/>nearby orders]
+    Check -->|No| Immediate[Process immediately]
+    Wait --> Assign[Assign driver &<br/>collection route]
+    Immediate --> Assign
+    Assign --> Collect[Driver collects stock<br/>from supplier]
+    Collect --> Deliver[Driver delivers to<br/>business]
+    Deliver --> Confirm{Business confirms<br/>receipt?}
+    Confirm -->|Yes| Pay[Pay service fee]
+    Confirm -->|No| Dispute[Raise dispute]
+    Pay --> End([Order complete])
+    Dispute --> End
+```
