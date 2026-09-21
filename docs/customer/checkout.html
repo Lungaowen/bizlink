@@ -25,7 +25,7 @@
       <div class="panel-head">
         <div>
           <h2>Checkout</h2>
-          <div class="sub">We'll estimate arrival from distance — like Bolt</div>
+          <div class="sub">Arrival estimated from distance and speed</div>
         </div>
       </div>
 
@@ -61,13 +61,13 @@
       <div class="job-card" style="margin-bottom:16px;background:var(--blue-tint);border-color:rgba(23,105,224,.2);">
         <div style="font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;">Estimated arrival (preview)</div>
         <div style="font-size:28px;font-weight:600;margin-top:4px;" id="preview-eta">—</div>
-        <div style="font-size:13px;color:var(--muted);" id="preview-detail">Includes shop prep + driver match + distance</div>
+        <div style="font-size:13px;color:var(--muted);" id="preview-detail">Shop prep + driver match + distance ÷ speed</div>
       </div>
 
       <div class="stat" style="margin-bottom:20px;">
         <div class="label">Order total</div>
         <div class="num" id="pay-total">R 0</div>
-        <div class="label" style="margin-top:6px;">+ shared delivery fee (~R 12–18)</div>
+        <div class="label" style="margin-top:6px;">+ delivery fee (~R 12–18)</div>
       </div>
 
       <div class="cta-row">
@@ -83,20 +83,19 @@
   document.getElementById('pay-total').textContent = 'R ' + total;
 
   var SPEED = 28; // km/h
+  function travelMins(km) {
+    return Math.max(1, Math.round((km / SPEED) * 60));
+  }
   function preview() {
     var parts = document.getElementById('shop').value.split('|');
     var km = parseFloat(parts[1]) || 1;
-    var prep = 6, match = 2, driverToShop = 2.4, stopsBefore = 2, stopMin = 3;
-    var mins = prep + match +
-      Math.round((driverToShop / SPEED) * 60) +
-      Math.round((km / SPEED) * 60) +
-      stopsBefore * stopMin;
-    var low = Math.max(1, mins - 3), high = mins + 4;
+    var driverToShop = 2.4;
+    var mins = 6 + 2 + travelMins(driverToShop) + travelMins(km);
     var d = new Date(Date.now() + mins * 60000);
     var clock = (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
     document.getElementById('preview-eta').textContent = '~' + mins + ' min · by ' + clock;
     document.getElementById('preview-detail').textContent =
-      km.toFixed(1) + ' km to you · shop prep · driver match · shared stops';
+      km.toFixed(1) + ' km to you · ~' + SPEED + ' km/h · prep + match included';
   }
   document.getElementById('shop').addEventListener('change', preview);
   preview();
