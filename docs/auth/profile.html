@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My profile — BizLink</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/auth.css">
+</head>
+<body>
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Home</a>
+    <a href="users.html">All users</a>
+    <a href="profile.html" class="current">Profile</a>
+  </div>
+  <div class="auth-actions">
+    <a class="auth-link" href="#" id="logout-btn">Sign out</a>
+  </div>
+</header>
+
+<main style="max-width:640px;margin:0 auto;padding:32px 20px 80px;">
+  <h1 style="font-size:28px;margin-bottom:8px;">My profile</h1>
+  <p style="color:var(--muted);margin-bottom:24px;">Update your details. Accounts cannot be deleted in this demo.</p>
+
+  <div class="banner" id="guest-banner" style="display:none;">
+    <span><b>Not signed in.</b> <a href="login.html" style="color:var(--blue);font-weight:600;">Sign in</a> or <a href="register.html" style="color:var(--blue);font-weight:600;">register</a>.</span>
+  </div>
+
+  <form id="profile-form" class="job-card" style="display:none;">
+    <div class="form-field">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" required>
+    </div>
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" disabled style="opacity:.7;">
+      <span style="font-size:12px;color:var(--muted);">Email is your login ID and cannot be changed in this simulation.</span>
+    </div>
+    <div class="form-field">
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" type="tel">
+    </div>
+    <div class="form-field">
+      <label for="area">Area</label>
+      <input id="area" name="area" type="text" placeholder="e.g. Soshanguve South">
+    </div>
+    <div class="form-field">
+      <label for="role">Role</label>
+      <select id="role" name="role">
+        <option value="CUSTOMER">Customer</option>
+        <option value="BUSINESS">Business</option>
+        <option value="DRIVER">Driver</option>
+      </select>
+    </div>
+    <div class="form-field" id="biz-field" hidden>
+      <label for="businessName">Business name</label>
+      <input id="businessName" name="businessName" type="text">
+    </div>
+    <div class="form-field">
+      <label for="password">New password (optional)</label>
+      <input id="password" name="password" type="password" minlength="8" placeholder="Leave blank to keep current">
+    </div>
+    <p id="profile-msg" class="auth-message" style="min-height:20px;"></p>
+    <div class="cta-row">
+      <button class="btn-primary" type="submit">Save changes</button>
+      <a class="btn-ghost" href="users.html">View all users</a>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px;">Created <span id="created-at">—</span> · Updated <span id="updated-at">—</span></p>
+  </form>
+</main>
+
+<script src="../assets/users.js"></script>
+<script>
+  var form = document.getElementById('profile-form');
+  var guest = document.getElementById('guest-banner');
+  var user = BizLinkUsers.current();
+
+  document.getElementById('logout-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    BizLinkUsers.logout();
+    window.location.href = 'login.html';
+  });
+
+  function syncBiz() {
+    var isBiz = document.getElementById('role').value === 'BUSINESS';
+    document.getElementById('biz-field').hidden = !isBiz;
+  }
+  document.getElementById('role').addEventListener('change', syncBiz);
+
+  if (!user) {
+    guest.style.display = 'flex';
+  } else {
+    form.style.display = 'block';
+    document.getElementById('name').value = user.name;
+    document.getElementById('email').value = user.email;
+    document.getElementById('phone').value = user.phone || '';
+    document.getElementById('area').value = user.area || '';
+    document.getElementById('role').value = user.role;
+    document.getElementById('businessName').value = user.businessName || '';
+    document.getElementById('created-at').textContent = user.createdAt ? new Date(user.createdAt).toLocaleString() : '—';
+    document.getElementById('updated-at').textContent = user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '—';
+    syncBiz();
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = document.getElementById('profile-msg');
+    var result = BizLinkUsers.update(user.id, {
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      area: document.getElementById('area').value,
+      role: document.getElementById('role').value,
+      businessName: document.getElementById('businessName').value,
+      password: document.getElementById('password').value
+    });
+    if (!result.ok) {
+      msg.textContent = result.error;
+      msg.className = 'auth-message error';
+      return;
+    }
+    user = result.user;
+    document.getElementById('password').value = '';
+    document.getElementById('updated-at').textContent = new Date(user.updatedAt).toLocaleString();
+    msg.textContent = 'Profile updated.';
+    msg.className = 'auth-message success';
+  });
+</script>
+</body>
+</html>
