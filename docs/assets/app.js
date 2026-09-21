@@ -29,14 +29,68 @@ function filterCards(){
   if(empty) empty.style.display = visible === 0 ? 'block' : 'none';
 }
 
+/* ---- Batch \u2192 Driver simulation ---- */
+var MOCK_DRIVERS = [
+  { name: 'Kabelo', vehicle: 'Bakkie', plate: 'GP 482-KLM', eta: '22 min', phone: '082 441 2290' },
+  { name: 'Precious', vehicle: 'Toyota Quantum', plate: 'GP 119-TZX', eta: '18 min', phone: '073 882 1044' },
+  { name: 'Thabo', vehicle: 'Honda Fit', plate: 'GP 334-NQA', eta: '15 min', phone: '061 203 7781' }
+];
+
 function startCountdown(el, startSeconds){
   var secs = startSeconds;
-  setInterval(function(){
-    if(secs <= 0) return;
+  var timer = setInterval(function(){
+    if(secs <= 0){
+      clearInterval(timer);
+      el.textContent = 'closed';
+      onBatchClosed();
+      return;
+    }
     secs -= 1;
     var m = Math.floor(secs/60), s = secs%60;
     el.textContent = 'closes in ' + (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
   }, 1000);
+}
+
+function onBatchClosed(){
+  var banner = document.getElementById('batch-banner');
+  var driverBanner = document.getElementById('driver-banner');
+  if(banner){
+    banner.className = 'banner notifying';
+    banner.innerHTML = '<span><b>Batch closed.</b> Notifying nearby drivers\u2026</span>';
+  }
+  setTimeout(function(){
+    var driver = MOCK_DRIVERS[Math.floor(Math.random()*MOCK_DRIVERS.length)];
+    sessionStorage.setItem('bizlink_driver', JSON.stringify(driver));
+    sessionStorage.setItem('bizlink_batch_status', 'assigned');
+
+    if(banner) banner.style.display = 'none';
+    if(driverBanner){
+      driverBanner.style.display = 'flex';
+      driverBanner.innerHTML =
+        '<div class="driver-info">' +
+          '<div class="driver-avatar">' + driver.name.charAt(0) + '</div>' +
+          '<div>' +
+            '<div class="driver-line"><b>Driver assigned \u2014 ' + driver.name + '</b></div>' +
+            '<div class="driver-meta">' + driver.vehicle + ' \u00b7 ' + driver.plate + ' \u00b7 ETA ' + driver.eta + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<a class="btn-ghost" style="padding:8px 14px;font-size:13px;" href="deliveries.html">Track delivery</a>';
+    }
+    document.querySelectorAll('.status-pill.waiting').forEach(function(pill){
+      pill.className = 'status-pill collecting';
+      pill.textContent = 'Driver assigned';
+    });
+    var sub = document.querySelector('.panel-head .sub');
+    if(sub) sub.textContent = 'Driver ' + driver.name + ' assigned \u00b7 collecting soon';
+  }, 2200);
+}
+
+function closeBatchNow(){
+  var cd = document.getElementById('countdown');
+  if(cd){
+    cd.textContent = 'closed';
+    onBatchClosed();
+  }
 }
 
 function submitOrder(e){
@@ -64,4 +118,30 @@ function showAddedBannerIfNeeded(){
   banner.querySelector('.added-text').textContent =
     added + ' (qty ' + params.get('qty') + ') from ' + params.get('supplier') + ' added to this batch.';
   banner.style.display = 'flex';
+}
+
+function restoreDriverStateIfAny(){
+  var status = sessionStorage.getItem('bizlink_batch_status');
+  var raw = sessionStorage.getItem('bizlink_driver');
+  if(status !== 'assigned' || !raw) return;
+  var driver = JSON.parse(raw);
+  var banner = document.getElementById('batch-banner');
+  var driverBanner = document.getElementById('driver-banner');
+  if(banner) banner.style.display = 'none';
+  if(driverBanner){
+    driverBanner.style.display = 'flex';
+    driverBanner.innerHTML =
+      '<div class="driver-info">' +
+        '<div class="driver-avatar">' + driver.name.charAt(0) + '</div>' +
+        '<div>' +
+          '<div class="driver-line"><b>Driver assigned \u2014 ' + driver.name + '</b></div>' +
+          '<div class="driver-meta">' + driver.vehicle + ' \u00b7 ' + driver.plate + ' \u00b7 ETA ' + driver.eta + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<a class="btn-ghost" style="padding:8px 14px;font-size:13px;" href="deliveries.html">Track delivery</a>';
+  }
+  document.querySelectorAll('.status-pill.waiting').forEach(function(pill){
+    pill.className = 'status-pill collecting';
+    pill.textContent = 'Driver assigned';
+  });
 }
