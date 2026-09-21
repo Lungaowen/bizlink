@@ -53,12 +53,14 @@
       // Inject styles if missing
       var style = document.createElement('style');
       style.textContent = `
-        .alert-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .alert-banner { background: #1a202c; color: #fff; padding: 14px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease-out forwards; font-size: 0.95rem; font-weight: 500; font-family: sans-serif;}
+        
+        .alert-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .alert-banner { background: #1a202c; color: #fff; padding: 14px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); animation: slideDown 0.3s ease-out forwards; font-size: 0.95rem; font-weight: 500; font-family: sans-serif; text-align: center;}
         .alert-success { background: #2f855a; }
         .alert-info { background: #2b6cb0; }
         .alert-banner.fade-out { opacity: 0; transition: opacity 0.4s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+ to { transform: translateX(0); opacity: 1; } }
       `;
       document.head.appendChild(style);
       document.body.appendChild(container);
@@ -69,11 +71,11 @@
     alertEl.textContent = message;
     container.appendChild(alertEl);
 
-    if (Notification.permission === 'granted') {
-      new Notification("BizLink", { body: message });
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission();
-    }
+    try {
+      if (window.Notification && Notification.permission === 'granted') {
+        new Notification("BizLink", { body: message });
+      }
+    } catch(e) {}
 
     setTimeout(function() {
       alertEl.classList.add('fade-out');
