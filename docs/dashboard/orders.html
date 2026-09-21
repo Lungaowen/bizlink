@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orders \u2014 BizLink dashboard</title>
+<title>Orders — BizLink dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
-
 <header class="top">
   <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
   <div class="top-links">
@@ -19,7 +18,6 @@
     <a href="../marketplace.html">Marketplace</a>
   </div>
 </header>
-
 <main>
   <div class="app-shell">
     <aside class="sidebar">
@@ -27,6 +25,8 @@
       <div class="biz-loc">Soshanguve South</div>
       <nav>
         <a href="orders.html" class="current">Orders</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="schedule.html">Schedule</a>
         <a href="deliveries.html">Deliveries</a>
         <a href="sales.html">Sales</a>
         <a href="payouts.html">Payouts</a>
@@ -36,9 +36,12 @@
       <div class="panel-head">
         <div>
           <h2>Orders</h2>
-          <div class="sub">3 pending &middot; next collection today</div>
+          <div class="sub">3 pending · next collection today</div>
         </div>
-        <a class="btn-primary" style="padding:10px 18px;font-size:14px;" href="new-order.html">New order</a>
+        <div class="cta-row" style="margin:0;">
+          <a class="btn-ghost" style="padding:10px 14px;font-size:14px;" href="schedule.html">Schedule</a>
+          <a class="btn-primary" style="padding:10px 18px;font-size:14px;" href="new-order.html">New order</a>
+        </div>
       </div>
 
       <div class="banner success" id="added-banner" style="display:none;">
@@ -46,8 +49,8 @@
       </div>
 
       <div class="banner" id="batch-banner">
-        <span><b>Consolidation window open</b> \u2014 2 nearby shops have joined this restock batch.</span>
-        <span style="display:flex;align-items:center;gap:12px;">
+        <span><b>Consolidation window open</b> — 2 nearby shops have joined this restock batch.</span>
+        <span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
           <span class="countdown" id="countdown">closes in 00:45</span>
           <button type="button" class="btn-ghost" style="padding:6px 12px;font-size:12px;" onclick="closeBatchNow()">Close batch now</button>
         </span>
@@ -73,7 +76,6 @@
     </div>
   </div>
 </main>
-
 <script src="../assets/app.js"></script>
 <script>
   showAddedBannerIfNeeded();
@@ -85,10 +87,14 @@
       '</td><td>' + params.get('qty') + '</td><td><span class="status-pill waiting">Batching</span></td>';
     document.getElementById('order-rows').prepend(row);
   }
-  // Short countdown for demo (45s). Use closeBatchNow() to skip.
   var cd = document.getElementById('countdown');
   if(cd && sessionStorage.getItem('bizlink_batch_status') !== 'assigned'){
     startCountdown(cd, 45);
+  }
+  var pref = sessionStorage.getItem('bizlink_preferred_slot');
+  if(pref){
+    var sub = document.querySelector('.panel-head .sub');
+    if(sub) sub.textContent = 'Preferred slot: ' + pref;
   }
 </script>
 </body>
