@@ -22,6 +22,14 @@ One centralised system connecting businesses to their suppliers and their custom
 - **Township businesses** — stock in (buy stock, sell products), goods out
 - **Consumers** — customers and other businesses
 
+### System flow
+
+```mermaid
+flowchart LR
+    S["Suppliers<br/>Wholesalers, distributors"] -->|"Stock in\n(bulk collection,\nconsolidated orders)"| B["Township business<br/>Buys stock, sells products"]
+    B -->|"Goods out\n(landmark/geotag delivery)"| C["Consumers<br/>Customers &amp; businesses"]
+```
+
 ## Competitors
 
 - **KasiD** — B2B logistics pivot providing stable revenue beyond consumer food delivery; strong brand recognition as a pioneer in the space.
@@ -42,3 +50,12 @@ One centralised system connecting businesses to their suppliers and their custom
 
 - **Pay-per-delivery** — a percentage of the service fee goes to BizLink, applied both when a business gets stock from suppliers and when a consumer gets finished goods from the business.
 - **Subscription for drivers** — drivers pay a monthly subscription to use the platform, priced by vehicle type.
+
+### Revenue flow
+
+```mermaid
+flowchart TD
+    Biz["Township business"] -->|"% service fee\non stock orders"| BL(("BizLink"))
+    Cons["Consumer"] -->|"% service fee\non purchases"| BL
+    Drv["Driver"] -->|"Monthly subscription\n(by vehicle type)"| BL
+```
