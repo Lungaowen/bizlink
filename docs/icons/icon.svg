@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img">
+  <rect width="512" height="512" rx="96" fill="#1769e0"/>
+  <path d="M96 320c48-96 96-48 144-128s96-48 176 16" fill="none" stroke="#f4c542" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="96" cy="320" r="28" fill="#ffffff"/>
+  <circle cx="240" cy="192" r="24" fill="#f4c542"/>
+  <circle cx="416" cy="208" r="24" fill="#ffffff"/>
+  <text x="256" y="420" text-anchor="middle" font-family="system-ui,sans-serif" font-size="72" font-weight="700" fill="#ffffff">Biz</text>
+</svg>
