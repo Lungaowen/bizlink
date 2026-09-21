@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historic trips — BizLink Driver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="index.html" class="current">Driver</a>
+    <a href="../customer/index.html">Customer</a>
+    <a href="../dashboard/orders.html">Business</a>
+  </div>
+</header>
+<main>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="biz-name">Kabelo</div>
+      <div class="biz-loc">Bakkie · GP 482-KLM</div>
+      <nav>
+        <a href="index.html">Jobs</a>
+        <a href="active.html">Active job</a>
+        <a href="trips.html" class="current">Historic trips</a>
+        <a href="earnings.html">Earnings</a>
+      </nav>
+    </aside>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Historic trips</h2>
+          <div class="sub">Completed and past delivery runs</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Job</th><th>Km</th><th>Fee</th><th>Status</th></tr></thead>
+        <tbody id="trip-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<script src="../assets/store.js"></script>
+<script>
+  var list = BizLinkStore.listTrips();
+  document.getElementById('trip-rows').innerHTML = list.map(function (t) {
+    var pill = t.status === 'Paid' || t.status === 'Complete' ? 'delivered' : 'collecting';
+    return '<tr><td>' + t.date + '</td><td>' + t.title + '</td><td>' + (t.km || '—') +
+      '</td><td>R ' + t.fee + '</td><td><span class="status-pill ' + pill + '">' + t.status + '</span></td></tr>';
+  }).join('');
+</script>
+</body>
+</html>
