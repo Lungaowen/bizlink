@@ -10,27 +10,28 @@
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-
 <header class="top">
   <a class="wordmark" href="index.html">Biz<em>Link</em></a>
   <div class="top-links">
     <a href="index.html" class="current">Landing</a>
+    <a href="auth/login.html">Sign in</a>
+    <a href="auth/register.html">Register</a>
     <a href="dashboard/orders.html">Business</a>
     <a href="driver/index.html">Driver</a>
     <a href="customer/index.html">Customer</a>
   </div>
 </header>
-
 <main>
   <div class="hero">
     <div>
       <h1>Stock moves together, costs come down.</h1>
       <p class="lede">BizLink bundles your restock with other shops on your street, then one driver collects and delivers it all — for a fraction of a solo courier run.</p>
       <div class="cta-row">
-        <a class="btn-primary" href="dashboard/orders.html">Business: order stock</a>
-        <a class="btn-ghost" href="customer/index.html">Customer: shop local</a>
-        <a class="btn-ghost" href="driver/index.html">Driver: go online</a>
+        <a class="btn-primary" href="auth/login.html?role=BUSINESS">Business: order stock</a>
+        <a class="btn-ghost" href="auth/login.html?role=CUSTOMER">Customer: shop local</a>
+        <a class="btn-ghost" href="auth/login.html?role=DRIVER">Driver: go online</a>
       </div>
+      <p style="margin-top:16px;font-size:13px;color:var(--muted);">New here? <a href="auth/register.html" style="font-weight:600;">Create a BizLink account</a>.</p>
     </div>
     <div class="route-art" aria-hidden="true">
       <svg viewBox="0 0 340 260">
@@ -41,7 +42,6 @@
       </svg>
     </div>
   </div>
-
   <div class="split">
     <div>
       <h2>The problem</h2>
@@ -61,6 +61,6 @@
     </div>
   </div>
 </main>
-
+<script src="assets/flow.js"></script>
 </body>
 </html>

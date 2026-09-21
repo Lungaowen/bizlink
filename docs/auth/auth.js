@@ -1,28 +1,44 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const registerForm = document.querySelector("#register-form");
-  const loginForm = document.querySelector("#login-form");
+document.addEventListener("DOMContentLoaded", function () {
+  var registerForm = document.querySelector("#register-form");
+  var loginForm = document.querySelector("#login-form");
+
+  function roleRoute(role) {
+    var routes = {
+      CUSTOMER: "../customer/index.html",
+      BUSINESS: "../dashboard/orders.html",
+      DRIVER: "../driver/index.html"
+    };
+    return routes[role] || "../index.html";
+  }
+
+  function saveAccount(role, name) {
+    sessionStorage.setItem("bizlink_role", role);
+    if (name) sessionStorage.setItem("bizlink_user_name", name);
+  }
 
   if (registerForm) {
-    const roleInputs = registerForm.querySelectorAll('input[name="role"]');
-    const businessField = document.querySelector("#business-name-field");
+    var roleInputs = registerForm.querySelectorAll('input[name="role"]');
+    var businessField = document.querySelector("#business-name-field");
 
-    const syncRoleFields = () => {
-      const role = registerForm.querySelector('input[name="role"]:checked')?.value;
-      const businessInput = businessField?.querySelector("input");
-      const isBusiness = role === "BUSINESS";
-
+    function syncRoleFields() {
+      var role = registerForm.querySelector('input[name="role"]:checked')?.value;
+      var businessInput = businessField?.querySelector("input");
+      var isBusiness = role === "BUSINESS";
       if (businessField) businessField.hidden = !isBusiness;
       if (businessInput) businessInput.required = isBusiness;
-    };
+    }
 
-    roleInputs.forEach(input => input.addEventListener("change", syncRoleFields));
+    roleInputs.forEach(function (input) {
+      input.addEventListener("change", syncRoleFields);
+    });
     syncRoleFields();
 
-    registerForm.addEventListener("submit", event => {
+    registerForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      const password = registerForm.elements.password.value;
-      const confirmation = registerForm.elements.passwordConfirmation.value;
-      const message = document.querySelector("#auth-message");
+
+      var password = registerForm.elements.password.value;
+      var confirmation = registerForm.elements.passwordConfirmation.value;
+      var message = document.querySelector("#auth-message");
 
       if (password !== confirmation) {
         message.textContent = "Passwords do not match.";
@@ -30,18 +46,36 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      message.textContent = "Account form is ready for API registration.";
+      var role = registerForm.querySelector('input[name="role"]:checked').value;
+      var name = registerForm.elements.name.value.trim();
+
+      saveAccount(role, name);
+      message.textContent = "Account created. Opening your BizLink workspace…";
       message.className = "auth-message success";
+
+      setTimeout(function () {
+        window.location.href = roleRoute(role);
+      }, 500);
     });
   }
 
   if (loginForm) {
-    loginForm.addEventListener("submit", event => {
+    loginForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      const role = loginForm.elements.role.value;
-      const message = document.querySelector("#auth-message");
-      message.textContent = `Sign-in form ready for the ${role.toLowerCase()} authentication API.`;
+
+      var role = loginForm.elements.role.value;
+      var email = loginForm.elements.email.value.trim();
+      var message = document.querySelector("#auth-message");
+
+      if (!email) return;
+
+      saveAccount(role, email.split("@")[0]);
+      message.textContent = "Signed in as " + role.toLowerCase() + ". Opening your workspace…";
       message.className = "auth-message success";
+
+      setTimeout(function () {
+        window.location.href = roleRoute(role);
+      }, 500);
     });
   }
 });

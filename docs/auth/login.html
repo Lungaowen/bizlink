@@ -16,11 +16,8 @@
         <h1>Move stock. Move business.</h1>
         <p>Sign in to manage orders, deliveries, and connections across BizLink.</p>
       </div>
-      <div class="auth-role-list">
-        <span>Customer</span><span>Business</span><span>Driver</span>
-      </div>
+      <div class="auth-role-list"><span>Customer</span><span>Business</span><span>Driver</span></div>
     </section>
-
     <section class="auth-card">
       <a class="back-link" href="../index.html">← Back to BizLink</a>
       <div class="auth-heading">
@@ -28,7 +25,6 @@
         <h2>Sign in to your account</h2>
         <p>Choose your account type and enter your details.</p>
       </div>
-
       <form id="login-form" class="auth-form">
         <label>Account type
           <select id="role" name="role" required>
@@ -37,27 +33,30 @@
             <option value="DRIVER">Driver</option>
           </select>
         </label>
-
         <label>Email address
           <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
         </label>
-
         <label>Password
           <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
         </label>
-
         <div class="auth-row">
           <label class="check"><input type="checkbox" name="remember"> Remember me</label>
-          <a href="#" class="text-link">Forgot password?</a>
+          <a href="#" class="text-link" onclick="return false;">Forgot password?</a>
         </div>
-
         <button class="auth-button" type="submit">Sign in</button>
         <p id="auth-message" class="auth-message" role="status"></p>
       </form>
-
       <p class="switch-auth">Don't have an account? <a class="text-link" href="register.html">Create one</a></p>
     </section>
   </main>
+  <script src="../assets/flow.js"></script>
   <script src="auth.js"></script>
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var requestedRole = params.get("role");
+    if (requestedRole && document.querySelector('#role option[value="' + requestedRole + '"]')) {
+      document.getElementById("role").value = requestedRole;
+    }
+  </script>
 </body>
 </html>
