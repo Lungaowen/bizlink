@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout \u2014 BizLink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="wordmark" href="../index.html">Biz<em>Link</em></a>
+  <div class="top-links">
+    <a href="../index.html">Landing</a>
+    <a href="../driver/index.html">Driver</a>
+    <a href="index.html" class="current">Customer</a>
+    <a href="../dashboard/orders.html">Business</a>
+  </div>
+</header>
+
+<main>
+  <div class="app-shell" style="grid-template-columns:1fr;max-width:520px;margin:32px auto 0;">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Checkout</h2>
+          <div class="sub">Delivery to your landmark address</div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="addr">Where should we deliver?</label>
+        <input id="addr" type="text" placeholder="e.g. Next to Boxer, near the big tree" value="Block F, blue roof, near the tuckshop">
+      </div>
+      <div class="form-field">
+        <label for="phone">Phone (for driver)</label>
+        <input id="phone" type="tel" placeholder="06x xxx xxxx" value="082 555 0199">
+      </div>
+
+      <div class="stat" style="margin-bottom:20px;">
+        <div class="label">Order total</div>
+        <div class="num" id="pay-total">R 0</div>
+        <div class="label" style="margin-top:6px;">+ delivery fee shared via BizLink (~R 12\u201318)</div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn-primary" type="button" onclick="placeOrder()">Place order</button>
+        <a class="btn-ghost" href="index.html">Back to shops</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  var total = parseInt(sessionStorage.getItem('bizlink_cart_total') || '0', 10);
+  document.getElementById('pay-total').textContent = 'R ' + total;
+  function placeOrder(){
+    if(total <= 0){ alert('Add items from the marketplace first.'); return; }
+    sessionStorage.setItem('bizlink_customer_order', JSON.stringify({
+      total: total,
+      addr: document.getElementById('addr').value,
+      phone: document.getElementById('phone').value,
+      status: 'finding_driver',
+      placedAt: Date.now()
+    }));
+    sessionStorage.setItem('bizlink_cart_total', '0');
+    window.location.href = 'track.html';
+  }
+</script>
+</body>
+</html>
