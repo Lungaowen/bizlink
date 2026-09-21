@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   var registerForm = document.querySelector("#register-form");
   var loginForm = document.querySelector("#login-form");
+  var Users = window.BizLinkUsers;
 
   function roleRoute(role) {
     var routes = {
@@ -11,18 +12,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return routes[role] || "../index.html";
   }
 
-  function saveAccount(role, name) {
-    sessionStorage.setItem("bizlink_role", role);
-    if (name) sessionStorage.setItem("bizlink_user_name", name);
-  }
-
   if (registerForm) {
     var roleInputs = registerForm.querySelectorAll('input[name="role"]');
     var businessField = document.querySelector("#business-name-field");
 
     function syncRoleFields() {
-      var role = registerForm.querySelector('input[name="role"]:checked')?.value;
-      var businessInput = businessField?.querySelector("input");
+      var role = registerForm.querySelector('input[name="role"]:checked');
+      role = role ? role.value : "CUSTOMER";
+      var businessInput = businessField ? businessField.querySelector("input") : null;
       var isBusiness = role === "BUSINESS";
       if (businessField) businessField.hidden = !isBusiness;
       if (businessInput) businessInput.required = isBusiness;
@@ -35,10 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     registerForm.addEventListener("submit", function (event) {
       event.preventDefault();
-
+      var message = document.querySelector("#auth-message");
       var password = registerForm.elements.password.value;
       var confirmation = registerForm.elements.passwordConfirmation.value;
-      var message = document.querySelector("#auth-message");
 
       if (password !== confirmation) {
         message.textContent = "Passwords do not match.";
@@ -46,15 +42,30 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      var role = registerForm.querySelector('input[name="role"]:checked').value;
-      var name = registerForm.elements.name.value.trim();
+      var roleEl = registerForm.querySelector('input[name="role"]:checked');
+      var role = roleEl ? roleEl.value : "CUSTOMER";
+      var result = Users.create({
+        name: registerForm.elements.name.value,
+        email: registerForm.elements.email.value,
+        phone: registerForm.elements.phone.value,
+        role: role,
+        businessName: registerForm.elements.businessName
+          ? registerForm.elements.businessName.value
+          : "",
+        password: password
+      });
 
-      saveAccount(role, name);
+      if (!result.ok) {
+        message.textContent = result.error;
+        message.className = "auth-message error";
+        return;
+      }
+
+      Users.setSession(result.user);
       message.textContent = "Account created. Opening your BizLink workspace…";
       message.className = "auth-message success";
-
       setTimeout(function () {
-        window.location.href = roleRoute(role);
+        window.location.href = roleRoute(result.user.role);
       }, 500);
     });
   }
@@ -62,19 +73,22 @@ document.addEventListener("DOMContentLoaded", function () {
   if (loginForm) {
     loginForm.addEventListener("submit", function (event) {
       event.preventDefault();
-
+      var message = document.querySelector("#auth-message");
       var role = loginForm.elements.role.value;
       var email = loginForm.elements.email.value.trim();
-      var message = document.querySelector("#auth-message");
+      var password = loginForm.elements.password.value;
 
-      if (!email) return;
+      var result = Users.authenticate(email, password, role);
+      if (!result.ok) {
+        message.textContent = result.error;
+        message.className = "auth-message error";
+        return;
+      }
 
-      saveAccount(role, email.split("@")[0]);
-      message.textContent = "Signed in as " + role.toLowerCase() + ". Opening your workspace…";
+      message.textContent = "Signed in as " + result.user.role.toLowerCase() + ". Opening workspace…";
       message.className = "auth-message success";
-
       setTimeout(function () {
-        window.location.href = roleRoute(role);
+        window.location.href = roleRoute(result.user.role);
       }, 500);
     });
   }
