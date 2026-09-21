@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BizLink — Prototype</title>
 <meta name="description" content="BizLink — township bulk delivery and consolidated ordering">
 <meta name="theme-color" content="#1769e0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BizLink">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -23,15 +23,18 @@
   <a class="wordmark" href="index.html">Biz<em>Link</em></a>
   <div class="top-links">
     <a href="index.html" class="current">Home</a>
-    <a href="marketplace.html">Marketplace</a>
+    <a href="marketplace.html">Shop</a>
   </div>
   <div class="auth-actions">
-    <button type="button" class="auth-link" id="pwa-install" hidden>Install app</button>
-    <a class="auth-link" href="auth/login.html">Sign in</a>
-    <a class="auth-cta" href="auth/register.html">Register</a>
+    <button type="button" class="auth-link" id="pwa-install" hidden>Install</button>
+    <a class="auth-cta" href="auth/register.html">Join</a>
   </div>
 </header>
 <main>
+  <div class="banner" id="ios-install-tip" hidden style="margin-top:16px;">
+    <span><b>Add to Home Screen:</b> Safari → Share → Add to Home Screen</span>
+  </div>
+
   <div class="hero">
     <div>
       <span class="eyebrow">Tshwane commerce network</span>
@@ -39,15 +42,12 @@
       <p class="lede">BizLink bundles your restock with other shops on your street, then one driver collects and delivers it all — for a fraction of a solo courier run.</p>
       <div class="cta-row">
         <a class="btn-primary" href="auth/register.html?role=BUSINESS">Business: get started</a>
-        <a class="btn-ghost" href="marketplace.html">Shop local</a>
+        <a class="btn-ghost" href="customer/index.html">Shop local</a>
       </div>
       <div class="landing-auth">
-        <span>Already have an account?</span>
         <a href="auth/login.html">Sign in</a>
         <span>·</span>
         <a href="auth/register.html">Create account</a>
-        <span>·</span>
-        <span style="color:var(--muted);font-size:13px;">Install as app for offline access</span>
       </div>
     </div>
     <div class="route-art" aria-hidden="true">
@@ -72,12 +72,21 @@
       <h2>What BizLink does</h2>
       <ul>
         <li><b>Bulk collection.</b> One driver, one trip, several shops' stock.</li>
-        <li><b>Scheduled restocks.</b> Fixed daily or weekly slots — no more running out.</li>
-        <li><b>Geotagged addressing.</b> "Next to Boxer, near the big tree" is a valid address.</li>
+        <li><b>Scheduled restocks.</b> Fixed daily or weekly slots.</li>
+        <li><b>Landmark addressing.</b> "Next to Boxer, near the big tree" works.</li>
       </ul>
     </div>
   </div>
 </main>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a href="index.html" class="current"><span class="nav-ico">⌂</span>Home</a>
+  <a href="customer/index.html"><span class="nav-ico">🛒</span>Shop</a>
+  <a href="driver/index.html"><span class="nav-ico">🚚</span>Driver</a>
+  <a href="dashboard/orders.html"><span class="nav-ico">🏪</span>Business</a>
+  <a href="auth/login.html"><span class="nav-ico">👤</span>Account</a>
+</nav>
+
 <script src="assets/flow.js"></script>
 <script src="assets/pwa.js"></script>
 </body>
